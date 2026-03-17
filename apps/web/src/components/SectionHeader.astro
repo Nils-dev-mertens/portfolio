@@ -1,0 +1,62 @@
+---
+interface Props {
+  label: string;
+  title: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+}
+
+const { label, title, ctaHref, ctaLabel } = Astro.props;
+---
+
+<div class="section-header">
+  <div class="section-header__left">
+    <span class="section-header__label">{label}</span>
+    <h2 class="section-header__title">{title}</h2>
+  </div>
+  {ctaHref && (
+    <a href={ctaHref} class="section-header__cta">{ctaLabel} →</a>
+  )}
+</div>
+
+<style>
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .section-header__label {
+    display: block;
+    font: var(--text-label);
+    font-family: var(--font-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    margin-bottom: var(--space-sm);
+  }
+
+  .section-header__title {
+    font: var(--text-h1);
+    font-family: var(--font-base);
+    color: var(--color-primary);
+  }
+
+  .section-header__cta {
+    font: var(--text-label);
+    font-family: var(--font-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+
+  .section-header__cta:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+</style>

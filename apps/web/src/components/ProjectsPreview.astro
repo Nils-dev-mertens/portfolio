@@ -1,0 +1,31 @@
+---
+import { getProjects } from '@portfolio/data';
+import SectionHeader from './SectionHeader.astro';
+import ProjectCard from './ProjectCard.astro';
+
+const projects = getProjects({ featured: true, limit: 3 });
+---
+
+<section class="projects-preview">
+  <div class="container">
+    <SectionHeader
+      label="Projecten"
+      title="Wat ik bouw"
+      ctaHref="/projects"
+      ctaLabel="Alle projecten"
+    />
+    <div class="projects-grid">
+      {projects.map((project) => (
+        <ProjectCard project={project} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-md);
+  }
+</style>

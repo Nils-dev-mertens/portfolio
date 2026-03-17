@@ -1,0 +1,12 @@
+{
+  "name": "@portfolio/data",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "build": "echo 'data package — no build step'"
+  }
+}

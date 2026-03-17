@@ -1,0 +1,184 @@
+---
+---
+
+<section class="hero">
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <span class="hero__label">Junior Fullstack Developer</span>
+      <h1 class="hero__name">Nils Mertens</h1>
+      <p class="hero__tagline">
+        Code, Automate, Deploy — van frontend tot infra, van pipelines tot scripts.
+        Alles open source op GitHub.
+      </p>
+      <div class="hero__cta">
+        <a href="/projects" class="btn btn--primary">Bekijk projecten</a>
+        <a href="/about" class="btn btn--ghost">Over mij</a>
+      </div>
+    </div>
+
+    <div class="hero__terminal" aria-hidden="true">
+      <div class="terminal__bar">
+        <span class="terminal__dot terminal__dot--red"></span>
+        <span class="terminal__dot terminal__dot--yellow"></span>
+        <span class="terminal__dot terminal__dot--green"></span>
+        <span class="terminal__title">nils@vps:~</span>
+      </div>
+      <div class="terminal__body">
+        <p><span class="t-dim">$</span> <span class="t-cmd">whoami</span></p>
+        <p class="t-out">nils-mertens</p>
+        <p><span class="t-dim">$</span> <span class="t-cmd">cat skills.txt</span></p>
+        <p class="t-out">TypeScript · Python · C# · Bash</p>
+        <p class="t-out">React · Vue · Node.js · .NET</p>
+        <p class="t-out">Docker · CI/CD · Playwright</p>
+        <p><span class="t-dim">$</span> <span class="t-cmd">echo $STATUS</span></p>
+        <p class="t-out t-accent">open voor freelance &amp; bijklussen</p>
+        <p><span class="t-dim">$</span> <span class="t-cursor">_</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-xl);
+    border-bottom: var(--border-subtle);
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .hero__label {
+    display: inline-block;
+    font: var(--text-label);
+    font-family: var(--font-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    margin-bottom: var(--space-md);
+  }
+
+  .hero__name {
+    font: 700 56px/1.05 var(--font-base);
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+  }
+
+  .hero__tagline {
+    font: var(--text-body);
+    color: var(--color-text);
+    max-width: 480px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero__cta {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: var(--radius-btn);
+    font: var(--text-label);
+    font-family: var(--font-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    text-decoration: none;
+  }
+
+  .btn:hover {
+    opacity: 0.85;
+    text-decoration: none;
+  }
+
+  .btn--primary {
+    background-color: var(--color-primary);
+    color: var(--color-bg);
+  }
+
+  .btn--ghost {
+    background-color: transparent;
+    color: var(--color-text);
+    border: var(--border-subtle);
+  }
+
+  /* Terminal */
+  .hero__terminal {
+    background-color: var(--color-surface);
+    border: var(--border-subtle);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+  }
+
+  .terminal__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background-color: rgba(255, 255, 255, 0.04);
+    border-bottom: var(--border-subtle);
+  }
+
+  .terminal__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .terminal__dot--red    { background: #ff5f57; }
+  .terminal__dot--yellow { background: #ffbd2e; }
+  .terminal__dot--green  { background: #28c840; }
+
+  .terminal__title {
+    font: var(--text-label);
+    font-family: var(--font-base);
+    color: var(--color-text);
+    opacity: 0.5;
+    margin-left: auto;
+  }
+
+  .terminal__body {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.6;
+  }
+
+  .t-dim  { color: var(--color-text); opacity: 0.4; }
+  .t-cmd  { color: var(--color-primary); }
+  .t-out  { color: var(--color-text); padding-left: var(--space-md); }
+  .t-accent { color: var(--color-accent); }
+
+  .t-cursor {
+    display: inline-block;
+    animation: blink 1s step-end infinite;
+    color: var(--color-primary);
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+    }
+    .hero__name {
+      font-size: 40px;
+    }
+    .hero__terminal {
+      display: none;
+    }
+  }
+</style>

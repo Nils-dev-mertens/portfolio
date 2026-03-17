@@ -1,0 +1,39 @@
+---
+import { getProjects } from '@portfolio/data';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+
+const projects = getProjects();
+---
+
+<BaseLayout
+  title="Projecten — Nils Mertens"
+  description="Alle open source projecten van Nils Mertens: web apps, CLI tools, DevOps setups en automatiseringsscripts."
+>
+  <section class="projects-page">
+    <div class="container">
+      <SectionHeader
+        label="Portfolio"
+        title="Alle projecten"
+      />
+      <div class="projects-grid">
+        {projects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .projects-page {
+    padding-top: var(--space-xl);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-md);
+  }
+</style>

@@ -1,0 +1,14 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "seed": "bun packages/data/src/seed.ts",
+    "start": "bun apps/web/dist/server/entry.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  }
+}

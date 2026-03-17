@@ -1,0 +1,56 @@
+---
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <span class="footer__copy">&copy; {new Date().getFullYear()} Nils Mertens</span>
+    <div class="footer__links">
+      <a href="https://github.com/Nils-Dev-Mertens" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:nilsdevmertens@gmail.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: var(--border-subtle);
+    padding-block: var(--space-lg);
+    margin-top: var(--space-xl);
+  }
+
+  .footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .footer__copy {
+    font: var(--text-label);
+    font-family: var(--font-base);
+    color: var(--color-text);
+    opacity: 0.5;
+  }
+
+  .footer__links {
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .footer__links a {
+    font: var(--text-label);
+    font-family: var(--font-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text);
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+
+  .footer__links a:hover {
+    opacity: 1;
+    text-decoration: none;
+    color: var(--color-primary);
+  }
+</style>

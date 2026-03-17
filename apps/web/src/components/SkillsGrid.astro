@@ -1,0 +1,61 @@
+---
+import SkillBadge from './SkillBadge.astro';
+
+const skillCategories = [
+  {
+    label: 'Talen',
+    skills: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Bash'],
+  },
+  {
+    label: 'Frontend',
+    skills: ['React', 'Vue', 'Angular', 'Astro', 'HTML/CSS'],
+  },
+  {
+    label: 'Backend & Runtime',
+    skills: ['Node.js', '.NET', 'ASP.NET', 'REST API', 'Bun'],
+  },
+  {
+    label: 'DevOps & Infra',
+    skills: ['Docker', 'Kubernetes', 'GitHub Actions', 'Jenkins', 'Linux', 'Nginx', 'AWS', 'Azure'],
+  },
+  {
+    label: 'Test Automation',
+    skills: ['Playwright', 'Selenium', 'Cypress'],
+  },
+];
+---
+
+<div class="skills-grid">
+  {skillCategories.map((cat) => (
+    <div class="skills-category">
+      <span class="skills-category__label">{cat.label}</span>
+      <div class="skills-category__badges">
+        {cat.skills.map((skill) => <SkillBadge name={skill} />)}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .skills-category__label {
+    display: block;
+    font: var(--text-label);
+    font-family: var(--font-base);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    margin-bottom: var(--space-sm);
+  }
+
+  .skills-category__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+</style>

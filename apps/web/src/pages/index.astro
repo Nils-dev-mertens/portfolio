@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import ProjectsPreview from '../components/ProjectsPreview.astro';
+import AboutPreview from '../components/AboutPreview.astro';
+import WorkExperience from '../components/WorkExperience.astro';
+import ContactStrip from '../components/ContactStrip.astro';
+---
+
+<BaseLayout>
+  <HeroSection />
+  <ProjectsPreview />
+  <AboutPreview />
+  <WorkExperience server:defer />
+  <ContactStrip />
+</BaseLayout>

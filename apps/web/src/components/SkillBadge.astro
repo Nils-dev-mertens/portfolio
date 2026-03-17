@@ -1,0 +1,24 @@
+---
+interface Props {
+  name: string;
+}
+
+const { name } = Astro.props;
+---
+
+<span class="skill-badge">{name}</span>
+
+<style>
+  .skill-badge {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-badge);
+    font: var(--text-label);
+    font-family: var(--font-base);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    border: var(--border-subtle);
+  }
+</style>
