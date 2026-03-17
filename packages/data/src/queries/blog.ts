@@ -13,10 +13,8 @@ export interface BlogPost {
 export function getBlogPosts(): BlogPost[] {
   const db = getDb();
   const rows = db
-    .query<Omit<BlogPost, 'published'> & { published: number }, []>(
-      'SELECT * FROM blog_posts WHERE published = 1 ORDER BY published_at DESC'
-    )
-    .all();
+    .prepare('SELECT * FROM blog_posts WHERE published = 1 ORDER BY published_at DESC')
+    .all() as (Omit<BlogPost, 'published'> & { published: number })[];
 
   return rows.map((row) => ({ ...row, published: row.published === 1 }));
 }

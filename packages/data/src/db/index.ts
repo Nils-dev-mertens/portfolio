@@ -1,11 +1,11 @@
-import { Database } from 'bun:sqlite';
+import Database from 'better-sqlite3';
 import { CREATE_PROJECTS, CREATE_GITHUB_ACTIVITY, CREATE_BLOG_POSTS } from './schema';
 
 const DB_PATH = process.env.DB_PATH ?? 'portfolio.db';
 
-let db: Database | null = null;
+let db: Database.Database | null = null;
 
-export function getDb(): Database {
+export function getDb(): Database.Database {
   if (db) return db;
 
   db = new Database(DB_PATH);

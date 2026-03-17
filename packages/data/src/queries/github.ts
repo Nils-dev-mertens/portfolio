@@ -11,8 +11,6 @@ export interface GithubActivity {
 export function getGithubActivity(limit = 10): GithubActivity[] {
   const db = getDb();
   return db
-    .query<GithubActivity, number>(
-      'SELECT * FROM github_activity ORDER BY occurred_at DESC LIMIT ?'
-    )
-    .all(limit);
+    .prepare('SELECT * FROM github_activity ORDER BY occurred_at DESC LIMIT ?')
+    .all(limit) as GithubActivity[];
 }

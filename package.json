@@ -8,6 +8,7 @@
     "seed": "bun packages/data/src/seed.ts",
     "start": "bun apps/web/dist/server/entry.mjs"
   },
+  "packageManager": "bun@1.2.5",
   "devDependencies": {
     "turbo": "^2.0.0"
   }

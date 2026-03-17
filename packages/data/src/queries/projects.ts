@@ -40,7 +40,7 @@ export function getProjects(opts: { featured?: boolean; limit?: number } = {}): 
     params.push(opts.limit);
   }
 
-  const rows = db.query<ProjectRow, (string | number)[]>(sql).all(...params);
+  const rows = db.prepare(sql).all(...params) as ProjectRow[];
 
   return rows.map((row) => ({
     ...row,
