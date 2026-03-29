@@ -29,26 +29,28 @@ const jobs = [
 ];
 ---
 
-<section class="work-experience">
+<section class="border-t border-border py-16">
   <div class="container">
-    <div class="we-header">
-      <span class="we-label">Werkervaring</span>
-      <h2 class="we-title">Waar ik gewerkt heb</h2>
+    <div class="mb-8">
+      <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
+        Werkervaring
+      </span>
+      <h2 class="text-[30px] font-bold leading-tight text-primary">Waar ik gewerkt heb</h2>
     </div>
 
-    <div class="timeline">
-      {jobs.map((job, i) => (
-        <div class="timeline__item">
-          <div class="timeline__marker" />
-          <div class="timeline__content">
-            <div class="timeline__meta">
-              <span class="timeline__type">{job.type}</span>
-              <span class="timeline__period">{job.period}</span>
+    <div class="border-l-2 border-white/8 pl-8 ml-2 flex flex-col">
+      {jobs.map((job) => (
+        <div class="relative pb-8 last:pb-0">
+          <div class="absolute -left-9.25 top-1 size-2.5 rounded-full bg-pink border-2 border-background" />
+          <div class="flex flex-col gap-2">
+            <div class="flex gap-4 items-center">
+              <span class="tag">{job.type}</span>
+              <span class="text-[11px] font-medium text-foreground/50">{job.period}</span>
             </div>
-            <h3 class="timeline__company">{job.company}</h3>
-            <p class="timeline__role">{job.role}</p>
-            <p class="timeline__desc">{job.description}</p>
-            <div class="timeline__tags">
+            <h3 class="text-xl font-medium text-primary">{job.company}</h3>
+            <p class="text-foreground/70 italic">{job.role}</p>
+            <p class="text-foreground leading-relaxed max-w-150">{job.description}</p>
+            <div class="flex flex-wrap gap-1">
               {job.tags.map((tag) => <span class="tag">{tag}</span>)}
             </div>
           </div>
@@ -57,128 +59,3 @@ const jobs = [
     </div>
   </div>
 </section>
-
-<style>
-  .work-experience {
-    border-top: var(--border-subtle);
-    padding-block: var(--space-xl);
-  }
-
-  .we-header {
-    margin-bottom: var(--space-lg);
-  }
-
-  .we-label {
-    display: block;
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-accent);
-    margin-bottom: var(--space-sm);
-  }
-
-  .we-title {
-    font: var(--text-h1);
-    font-family: var(--font-base);
-    color: var(--color-primary);
-  }
-
-  .timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    border-left: 2px solid rgba(255, 255, 255, 0.08);
-    padding-left: var(--space-lg);
-    margin-left: var(--space-sm);
-  }
-
-  .timeline__item {
-    position: relative;
-    padding-bottom: var(--space-lg);
-  }
-
-  .timeline__item:last-child {
-    padding-bottom: 0;
-  }
-
-  .timeline__marker {
-    position: absolute;
-    left: calc(-1 * var(--space-lg) - 5px);
-    top: 4px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: var(--color-accent);
-    border: 2px solid var(--color-bg);
-  }
-
-  .timeline__content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .timeline__meta {
-    display: flex;
-    gap: var(--space-md);
-    align-items: center;
-  }
-
-  .timeline__type {
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-accent);
-    background-color: rgba(216, 95, 163, 0.1);
-    border: 1px solid rgba(216, 95, 163, 0.25);
-    padding: 2px 8px;
-    border-radius: var(--radius-badge);
-  }
-
-  .timeline__period {
-    font: var(--text-label);
-    font-family: var(--font-base);
-    color: var(--color-text);
-    opacity: 0.5;
-  }
-
-  .timeline__company {
-    font: var(--text-h2);
-    font-family: var(--font-base);
-    color: var(--color-primary);
-  }
-
-  .timeline__role {
-    font: var(--text-body);
-    color: var(--color-text);
-    opacity: 0.7;
-    font-style: italic;
-  }
-
-  .timeline__desc {
-    font: var(--text-body);
-    color: var(--color-text);
-    max-width: 600px;
-  }
-
-  .timeline__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-  }
-
-  .tag {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: var(--radius-badge);
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-accent);
-    background-color: rgba(216, 95, 163, 0.1);
-    border: 1px solid rgba(216, 95, 163, 0.25);
-  }
-</style>

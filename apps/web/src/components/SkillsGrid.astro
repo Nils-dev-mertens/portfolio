@@ -25,37 +25,15 @@ const skillCategories = [
 ];
 ---
 
-<div class="skills-grid">
+<div class="flex flex-col gap-8">
   {skillCategories.map((cat) => (
-    <div class="skills-category">
-      <span class="skills-category__label">{cat.label}</span>
-      <div class="skills-category__badges">
+    <div>
+      <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
+        {cat.label}
+      </span>
+      <div class="flex flex-wrap gap-2">
         {cat.skills.map((skill) => <SkillBadge name={skill} />)}
       </div>
     </div>
   ))}
 </div>
-
-<style>
-  .skills-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-  }
-
-  .skills-category__label {
-    display: block;
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-accent);
-    margin-bottom: var(--space-sm);
-  }
-
-  .skills-category__badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-</style>

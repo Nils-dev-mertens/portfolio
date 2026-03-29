@@ -6,7 +6,7 @@ import ProjectCard from './ProjectCard.astro';
 const projects = getProjects({ featured: true, limit: 3 });
 ---
 
-<section class="projects-preview">
+<section class="py-16">
   <div class="container">
     <SectionHeader
       label="Projecten"
@@ -14,18 +14,10 @@ const projects = getProjects({ featured: true, limit: 3 });
       ctaHref="/projects"
       ctaLabel="Alle projecten"
     />
-    <div class="projects-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {projects.map((project) => (
         <ProjectCard project={project} />
       ))}
     </div>
   </div>
 </section>
-
-<style>
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--space-md);
-  }
-</style>

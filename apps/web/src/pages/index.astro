@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSectionOld from '../components/HeroSectionold.astro';
 import HeroSection from '../components/HeroSection.astro';
 import ProjectsPreview from '../components/ProjectsPreview.astro';
 import AboutPreview from '../components/AboutPreview.astro';
@@ -9,6 +10,7 @@ import ContactStrip from '../components/ContactStrip.astro';
 
 <BaseLayout>
   <HeroSection />
+  <HeroSectionOld />
   <ProjectsPreview />
   <AboutPreview />
   <WorkExperience server:defer />

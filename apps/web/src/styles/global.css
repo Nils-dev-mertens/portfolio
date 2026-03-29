@@ -1,4 +1,9 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/geist";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   /* Synthwave palette */
@@ -8,69 +13,118 @@
   --color-accent:  #d85fa3;
   --color-text:    #c8c0e8;
 
-  /* Typography */
-  --font-base: 'Inter', system-ui, sans-serif;
-  --text-display: 700 48px/1.1 var(--font-base);
-  --text-h1:      700 30px/1.2 var(--font-base);
-  --text-h2:      500 20px/1.3 var(--font-base);
-  --text-body:    400 16px/1.7 var(--font-base);
-  --text-label:   500 11px/1 var(--font-base);
-
-  /* Spacing — multiples of 4 */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 32px;
-  --space-xl: 64px;
-
-  /* Shape */
-  --radius-card:   8px;
-  --radius-btn:    6px;
-  --radius-badge:  999px;
-  --border-subtle: 1px solid rgba(255, 255, 255, 0.08);
-
-  /* Layout */
   --max-width: 1200px;
+
+  /* shadcn tokens — synthwave dark theme */
+  --background:                 #1e1b2e;
+  --foreground:                 #c8c0e8;
+  --card:                       #2a2440;
+  --card-foreground:            #c8c0e8;
+  --popover:                    #2a2440;
+  --popover-foreground:         #c8c0e8;
+  --primary:                    #f5d060;
+  --primary-foreground:         #1e1b2e;
+  --secondary:                  #2a2440;
+  --secondary-foreground:       #c8c0e8;
+  --muted:                      rgba(255, 255, 255, 0.05);
+  --muted-foreground:           rgba(200, 192, 232, 0.55);
+  --accent:                     rgba(216, 95, 163, 0.12);
+  --accent-foreground:          #d85fa3;
+  --destructive:                oklch(0.577 0.245 27.325);
+  --border:                     rgba(255, 255, 255, 0.08);
+  --input:                      rgba(255, 255, 255, 0.1);
+  --ring:                       #f5d060;
+  --radius:                     0.5rem;
+  --sidebar:                    #2a2440;
+  --sidebar-foreground:         #c8c0e8;
+  --sidebar-primary:            #f5d060;
+  --sidebar-primary-foreground: #1e1b2e;
+  --sidebar-accent:             rgba(216, 95, 163, 0.12);
+  --sidebar-accent-foreground:  #d85fa3;
+  --sidebar-border:             rgba(255, 255, 255, 0.08);
+  --sidebar-ring:               #f5d060;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@theme inline {
+  --font-sans:                        'Geist Variable', sans-serif;
+  --font-heading:                     var(--font-sans);
+  --color-background:                 var(--background);
+  --color-foreground:                 var(--foreground);
+  --color-card:                       var(--card);
+  --color-card-foreground:            var(--card-foreground);
+  --color-popover:                    var(--popover);
+  --color-popover-foreground:         var(--popover-foreground);
+  --color-primary:                    var(--primary);
+  --color-primary-foreground:         var(--primary-foreground);
+  --color-secondary:                  var(--secondary);
+  --color-secondary-foreground:       var(--secondary-foreground);
+  --color-muted:                      var(--muted);
+  --color-muted-foreground:           var(--muted-foreground);
+  --color-accent:                     var(--accent);
+  --color-accent-foreground:          var(--accent-foreground);
+  --color-destructive:                var(--destructive);
+  --color-border:                     var(--border);
+  --color-input:                      var(--input);
+  --color-ring:                       var(--ring);
+  --color-sidebar:                    var(--sidebar);
+  --color-sidebar-foreground:         var(--sidebar-foreground);
+  --color-sidebar-primary:            var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:             var(--sidebar-accent);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-border:             var(--sidebar-border);
+  --color-sidebar-ring:               var(--sidebar-ring);
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  /* Synthwave pink utility — bg-pink, text-pink, border-pink */
+  --color-pink: #d85fa3;
 }
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
-body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font: var(--text-body);
-  font-family: var(--font-base);
-  -webkit-font-smoothing: antialiased;
+/* Shared tag pill (pink) */
+.tag {
+  @apply inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-pink bg-pink/10 border border-pink/25;
 }
 
-a {
-  color: var(--color-primary);
-  text-decoration: none;
+/* Buttons */
+.btn {
+  @apply inline-flex items-center px-5 py-2.5 rounded-md text-[11px] font-medium uppercase tracking-[0.08em] cursor-pointer transition-opacity duration-150 hover:opacity-85;
+}
+.btn-primary {
+  @apply bg-primary text-primary-foreground;
+}
+.btn-ghost {
+  @apply bg-transparent text-foreground border border-border;
 }
 
-a:hover {
-  text-decoration: underline;
+/* Terminal cursor blink */
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }
 
-h1, h2, h3 {
-  color: var(--color-primary);
-  line-height: 1.2;
-}
-
+/* Layout */
 .container {
   max-width: var(--max-width);
   margin-inline: auto;
-  padding-inline: var(--space-lg);
-}
-
-section {
-  padding-block: var(--space-xl);
+  padding-inline: 2rem;
 }

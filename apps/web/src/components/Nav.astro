@@ -8,16 +8,23 @@ const links = [
 const current = Astro.url.pathname;
 ---
 
-<header class="nav">
-  <div class="container nav__inner">
-    <a href="/" class="nav__logo">NM<span class="nav__logo-dot">.</span></a>
+<header class="sticky top-0 z-50 bg-background border-b border-border">
+  <div class="container flex items-center justify-between h-15">
+    <a href="/" class="text-xl font-bold text-primary">
+      NM<span class="text-pink">.</span>
+    </a>
     <nav>
-      <ul class="nav__links">
+      <ul class="flex gap-8 list-none">
         {links.map((link) => (
           <li>
             <a
               href={link.href}
-              class:list={['nav__link', { 'nav__link--active': current === link.href }]}
+              class:list={[
+                'text-[11px] font-medium uppercase tracking-[0.08em] transition-colors duration-150',
+                current === link.href
+                  ? 'text-primary'
+                  : 'text-foreground hover:text-primary',
+              ]}
             >
               {link.label}
             </a>
@@ -27,52 +34,3 @@ const current = Astro.url.pathname;
     </nav>
   </div>
 </header>
-
-<style>
-  .nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: var(--color-bg);
-    border-bottom: var(--border-subtle);
-  }
-
-  .nav__inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-  }
-
-  .nav__logo {
-    font: 700 20px/1 var(--font-base);
-    color: var(--color-primary);
-    text-decoration: none;
-  }
-
-  .nav__logo-dot {
-    color: var(--color-accent);
-  }
-
-  .nav__links {
-    display: flex;
-    gap: var(--space-lg);
-    list-style: none;
-  }
-
-  .nav__link {
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-text);
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-
-  .nav__link:hover,
-  .nav__link--active {
-    color: var(--color-primary);
-    text-decoration: none;
-  }
-</style>

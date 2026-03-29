@@ -8,284 +8,104 @@ import SkillsGrid from '../components/SkillsGrid.astro';
   title="Over mij — Nils Mertens"
   description="Junior Fullstack Developer uit Antwerpen. Meer over Nils Mertens: achtergrond, opleiding en werkervaring."
 >
-  <div class="about-page">
+  <div class="pt-16">
     <div class="container">
 
       <!-- Bio -->
-      <section class="about-section">
+      <section class="pb-16 border-b border-border last:border-none">
         <SectionHeader label="Profiel" title="Over Nils Mertens" />
-        <div class="bio">
-          <p>
+        <div class="flex flex-col gap-4 max-w-180">
+          <p class="text-foreground leading-[1.7]">
             Ik ben Nils — een junior developer uit Antwerpen met een brede interesse in alles wat
             met code te maken heeft. Van frontend tot backend, van pipelines tot scripts: ik vind
             het allemaal interessant. Mijn kijk op "fullstack" stopt niet bij UI en API — het
             omvat ook de lagen daaromheen: deployment, automatisering, infrastructuur.
           </p>
-          <p>
+          <p class="text-foreground leading-[1.7]">
             Momenteel studeer ik nog aan AP Hogeschool, maar ik doe ondertussen al werkervaring
             op via stages en bijklussen. Alles wat ik bouw is publiek op GitHub — open source
             minded, hands-on aanpak.
           </p>
-          <p>
+          <p class="text-foreground leading-[1.7]">
             Mijn DevOps kennis is grotendeels zelfgeleerd: toegepast op een eigen home server
             setup met Docker, Nginx en diverse zelf-gehoste services.
           </p>
-          <div class="bio__meta">
-            <div class="meta-row">
-              <span class="meta-label">Locatie</span>
-              <span>Antwerpen, België</span>
+          <div class="flex flex-col gap-2 mt-2 p-4 bg-card border border-border rounded-lg max-w-100">
+            <div class="flex gap-4 items-center">
+              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">Locatie</span>
+              <span class="text-foreground">Antwerpen, België</span>
             </div>
-            <div class="meta-row">
-              <span class="meta-label">E-mail</span>
-              <a href="mailto:nilsdevmertens@gmail.com">nilsdevmertens@gmail.com</a>
+            <div class="flex gap-4 items-center">
+              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">E-mail</span>
+              <a href="mailto:nilsdevmertens@gmail.com" class="text-primary hover:underline">nilsdevmertens@gmail.com</a>
             </div>
-            <div class="meta-row">
-              <span class="meta-label">GitHub</span>
-              <a href="https://github.com/Nils-Dev-Mertens" target="_blank" rel="noopener">
+            <div class="flex gap-4 items-center">
+              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">GitHub</span>
+              <a href="https://github.com/Nils-Dev-Mertens" target="_blank" rel="noopener" class="text-primary hover:underline">
                 Nils-Dev-Mertens
               </a>
             </div>
-            <div class="meta-row">
-              <span class="meta-label">Status</span>
-              <span class="status-badge">Open voor freelance</span>
+            <div class="flex gap-4 items-center">
+              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">Status</span>
+              <span class="inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 border border-primary/30">
+                Open voor freelance
+              </span>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Skills -->
-      <section class="about-section">
+      <section class="py-16 border-b border-border">
         <SectionHeader label="Vaardigheden" title="Technische stack" />
         <SkillsGrid />
       </section>
 
       <!-- Work experience -->
-      <section class="about-section">
+      <section class="py-16 border-b border-border">
         <SectionHeader label="Werkervaring" title="Waar ik gewerkt heb" />
-        <div class="timeline">
-          <div class="timeline__item">
-            <div class="timeline__marker" />
-            <div class="timeline__content">
-              <div class="timeline__meta">
-                <span class="timeline__type">Stage</span>
-                <span class="timeline__period">Juli 2025 – Augustus 2025</span>
+        <div class="border-l-2 border-white/8 pl-8 ml-2 flex flex-col">
+          {[
+            { type: 'Stage', period: 'Juli 2025 – Augustus 2025', company: 'ZORGI', role: 'Test Automation Engineer', desc: 'Werkte als test automation engineer binnen een zorggerelateerde applicatieomgeving. Schrijven en uitvoeren van geautomatiseerde end-to-end tests, integratie met CI/CD pipeline.' },
+            { type: 'Freelance', period: 'Juni 2024 – November 2024', company: 'WEXSO BV', role: 'Lead Media/Web', desc: 'Lead rol in media en webontwikkeling. Verantwoordelijk voor frontend development, contentontwikkeling en technisch beheer van webprojecten.' },
+            { type: 'Opdracht', period: 'Februari 2024', company: 'Adminesstration.be', role: 'Media/Web', desc: 'Kortlopende media/web opdracht.' },
+          ].map((job) => (
+            <div class="relative pb-8 last:pb-0">
+              <div class="absolute -left-9.25 top-1 size-2.5 rounded-full bg-pink border-2 border-background" />
+              <div class="flex flex-col gap-2">
+                <div class="flex gap-4 items-center">
+                  <span class="tag">{job.type}</span>
+                  <span class="text-[11px] font-medium text-foreground/50">{job.period}</span>
+                </div>
+                <h3 class="text-xl font-medium text-primary">{job.company}</h3>
+                <p class="text-foreground/70 italic">{job.role}</p>
+                <p class="text-foreground leading-relaxed max-w-150">{job.desc}</p>
               </div>
-              <h3 class="timeline__company">ZORGI</h3>
-              <p class="timeline__role">Test Automation Engineer</p>
-              <p class="timeline__desc">
-                Werkte als test automation engineer binnen een zorggerelateerde applicatieomgeving.
-                Schrijven en uitvoeren van geautomatiseerde end-to-end tests, integratie met CI/CD pipeline.
-              </p>
             </div>
-          </div>
-
-          <div class="timeline__item">
-            <div class="timeline__marker" />
-            <div class="timeline__content">
-              <div class="timeline__meta">
-                <span class="timeline__type">Freelance</span>
-                <span class="timeline__period">Juni 2024 – November 2024</span>
-              </div>
-              <h3 class="timeline__company">WEXSO BV</h3>
-              <p class="timeline__role">Lead Media/Web</p>
-              <p class="timeline__desc">
-                Lead rol in media en webontwikkeling. Verantwoordelijk voor frontend development,
-                contentontwikkeling en technisch beheer van webprojecten.
-              </p>
-            </div>
-          </div>
-
-          <div class="timeline__item">
-            <div class="timeline__marker" />
-            <div class="timeline__content">
-              <div class="timeline__meta">
-                <span class="timeline__type">Opdracht</span>
-                <span class="timeline__period">Februari 2024</span>
-              </div>
-              <h3 class="timeline__company">Adminesstration.be</h3>
-              <p class="timeline__role">Media/Web</p>
-              <p class="timeline__desc">Kortlopende media/web opdracht.</p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       <!-- Education -->
-      <section class="about-section">
+      <section class="py-16">
         <SectionHeader label="Opleiding" title="Achtergrond" />
-        <div class="timeline">
-          <div class="timeline__item">
-            <div class="timeline__marker" />
-            <div class="timeline__content">
-              <h3 class="timeline__company">AP Hogeschool — Antwerpen</h3>
-              <p class="timeline__role">Graduaat Programmeren</p>
-              <p class="timeline__desc">
-                Technische opleiding gericht op softwareontwikkeling. Focus op fullstack development,
-                OOP en projectwerk.
-              </p>
+        <div class="border-l-2 border-white/8 pl-8 ml-2 flex flex-col">
+          {[
+            { company: 'AP Hogeschool — Antwerpen', role: 'Graduaat Programmeren', desc: 'Technische opleiding gericht op softwareontwikkeling. Focus op fullstack development, OOP en projectwerk.' },
+            { company: 'Cadix — Noorderlaan, Antwerpen', role: 'Opleiding Multimedia', desc: 'Opleiding met focus op multimedia, web en digitale media.' },
+          ].map((edu) => (
+            <div class="relative pb-8 last:pb-0">
+              <div class="absolute -left-9.25 top-1 size-2.5 rounded-full bg-pink border-2 border-background" />
+              <div class="flex flex-col gap-2">
+                <h3 class="text-xl font-medium text-primary">{edu.company}</h3>
+                <p class="text-foreground/70 italic">{edu.role}</p>
+                <p class="text-foreground leading-relaxed max-w-150">{edu.desc}</p>
+              </div>
             </div>
-          </div>
-
-          <div class="timeline__item">
-            <div class="timeline__marker" />
-            <div class="timeline__content">
-              <h3 class="timeline__company">Cadix — Noorderlaan, Antwerpen</h3>
-              <p class="timeline__role">Opleiding Multimedia</p>
-              <p class="timeline__desc">
-                Opleiding met focus op multimedia, web en digitale media.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
     </div>
   </div>
 </BaseLayout>
-
-<style>
-  .about-page {
-    padding-top: var(--space-xl);
-  }
-
-  .about-section {
-    padding-top: 0;
-    padding-bottom: var(--space-xl);
-    border-bottom: var(--border-subtle);
-  }
-
-  .about-section:last-child {
-    border-bottom: none;
-  }
-
-  .bio {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    max-width: 720px;
-  }
-
-  .bio p {
-    color: var(--color-text);
-    line-height: 1.7;
-  }
-
-  .bio__meta {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    margin-top: var(--space-sm);
-    padding: var(--space-md);
-    background-color: var(--color-surface);
-    border: var(--border-subtle);
-    border-radius: var(--radius-card);
-    max-width: 400px;
-  }
-
-  .meta-row {
-    display: flex;
-    gap: var(--space-md);
-    align-items: center;
-  }
-
-  .meta-label {
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-text);
-    opacity: 0.5;
-    min-width: 80px;
-  }
-
-  .status-badge {
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 2px 10px;
-    border-radius: var(--radius-badge);
-    background-color: rgba(245, 208, 96, 0.1);
-    border: 1px solid rgba(245, 208, 96, 0.3);
-    color: var(--color-primary);
-  }
-
-  /* Timeline */
-  .timeline {
-    display: flex;
-    flex-direction: column;
-    border-left: 2px solid rgba(255, 255, 255, 0.08);
-    padding-left: var(--space-lg);
-    margin-left: var(--space-sm);
-  }
-
-  .timeline__item {
-    position: relative;
-    padding-bottom: var(--space-lg);
-  }
-
-  .timeline__item:last-child {
-    padding-bottom: 0;
-  }
-
-  .timeline__marker {
-    position: absolute;
-    left: calc(-1 * var(--space-lg) - 5px);
-    top: 4px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: var(--color-accent);
-    border: 2px solid var(--color-bg);
-  }
-
-  .timeline__content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .timeline__meta {
-    display: flex;
-    gap: var(--space-md);
-    align-items: center;
-  }
-
-  .timeline__type {
-    font: var(--text-label);
-    font-family: var(--font-base);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-accent);
-    background-color: rgba(216, 95, 163, 0.1);
-    border: 1px solid rgba(216, 95, 163, 0.25);
-    padding: 2px 8px;
-    border-radius: var(--radius-badge);
-  }
-
-  .timeline__period {
-    font: var(--text-label);
-    font-family: var(--font-base);
-    color: var(--color-text);
-    opacity: 0.5;
-  }
-
-  .timeline__company {
-    font: var(--text-h2);
-    font-family: var(--font-base);
-    color: var(--color-primary);
-  }
-
-  .timeline__role {
-    font: var(--text-body);
-    color: var(--color-text);
-    opacity: 0.7;
-    font-style: italic;
-  }
-
-  .timeline__desc {
-    font: var(--text-body);
-    color: var(--color-text);
-    max-width: 600px;
-  }
-</style>

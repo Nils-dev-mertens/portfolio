@@ -11,13 +11,10 @@ const projects = getProjects();
   title="Projecten — Nils Mertens"
   description="Alle open source projecten van Nils Mertens: web apps, CLI tools, DevOps setups en automatiseringsscripts."
 >
-  <section class="projects-page">
+  <section class="pt-16">
     <div class="container">
-      <SectionHeader
-        label="Portfolio"
-        title="Alle projecten"
-      />
-      <div class="projects-grid">
+      <SectionHeader label="Portfolio" title="Alle projecten" />
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.map((project) => (
           <ProjectCard project={project} />
         ))}
@@ -25,15 +22,3 @@ const projects = getProjects();
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .projects-page {
-    padding-top: var(--space-xl);
-  }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--space-md);
-  }
-</style>
