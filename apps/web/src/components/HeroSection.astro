@@ -1,7 +1,207 @@
 ---
-import { Button } from "./ui/button";
-
+import nilsPhoto from '../public/images/1732207667226.jpg';
+import { buttonVariants } from "./ui/button";
 ---
-<div>
-    <Button>hello</Button>
-</div>
+
+<section class="flex items-center min-h-[calc(80svh-60px)]">
+  <div class="container grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-16 items-start py-16">
+
+    <!-- Left: Flip Photo Card -->
+    <div class="flex justify-center">
+      <a href="/about" class="flip-card" aria-label="Meer over Nils">
+        <div class="flip-inner">
+
+          <!-- Front: normal photo -->
+          <div class="flip-front">
+            <img src={nilsPhoto.src} alt="Nils Mertens" class="w-full h-full object-cover object-top" />
+          </div>
+
+          <!-- Back: duotone photo + CTA overlay -->
+          <div class="flip-back">
+            <img src={nilsPhoto.src} alt="" class="w-full h-full object-cover object-top back-img" />
+            <div class="flip-overlay">
+              <span class="cta-label">Meer weten?</span>
+              <p class="cta-title">Over mij →</p>
+            </div>
+          </div>
+
+        </div>
+      </a>
+    </div>
+
+    <!-- Right: Content -->
+    <div class="flex items-center h-full">
+    <div class="flex flex-col gap-3">
+      <span class="tag self-start hero-fade" style="animation-delay: 0ms">Junior Fullstack Developer</span>
+      <h1 class="text-[56px] md:text-[72px] font-bold leading-none text-primary hero-fade" style="animation-delay: 100ms">
+        Nils Mertens
+      </h1>
+      <p class="text-foreground/70 text-lg max-w-md leading-[1.7] hero-fade" style="animation-delay: 200ms">
+        Code, Automate, Deploy — van frontend tot infra,
+        van pipelines tot scripts.
+      </p>
+      <div class="flex gap-3 flex-wrap mt-2 hero-fade" style="animation-delay: 320ms">
+        <a href="/projects" class={buttonVariants({ size: "lg" })}>Bekijk projecten</a>
+        <a href="/about" class={buttonVariants({ variant: "outline", size: "lg" })}>Over mij</a>
+      </div>
+    </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /*  Entrance fade-up  */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-fade {
+    opacity: 0;
+    animation: fadeUp 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /*  Flip tease (hints the card can be flipped)  */
+  @keyframes flipTease {
+    0%, 55%, 100% { transform: rotateY(0deg); }
+    25%           { transform: rotateY(28deg); }
+  }
+
+  /*  Glow pulse  */
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow:
+        0 0 0 5px rgba(216, 95, 163, 0.07),
+        0 0 36px rgba(216, 95, 163, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+    50% {
+      box-shadow:
+        0 0 0 5px rgba(216, 95, 163, 0.13),
+        0 0 56px rgba(216, 95, 163, 0.38),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  /*  Card shell  */
+  .flip-card {
+    display: block;
+    width: 280px;
+    height: 360px;
+    perspective: 1000px;
+    cursor: pointer;
+    transform: rotate(-2deg);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .flip-card:hover {
+    transform: rotate(0deg);
+  }
+
+  /*  3-D inner wrapper  */
+  .flip-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: flipTease 5s ease-in-out infinite 2s;
+  }
+
+  /* hover flip is handled by JS to avoid animation/transition conflict */
+
+  /*  Shared face styles  */
+  .flip-front,
+  .flip-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  /*  Front: pink neon frame  */
+  .flip-front {
+    border: 1px solid rgba(216, 95, 163, 0.35);
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+
+  /*  Back: gold neon frame  */
+  .flip-back {
+    transform: rotateY(180deg);
+    border: 1px solid rgba(245, 208, 96, 0.45);
+    box-shadow:
+      0 0 0 5px rgba(245, 208, 96, 0.08),
+      0 0 44px rgba(245, 208, 96, 0.25);
+  }
+
+  /* darkened + desaturated photo on the back */
+  .back-img {
+    filter: grayscale(70%) brightness(0.45);
+  }
+
+  /* synthwave gradient overlay */
+  .flip-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(
+      160deg,
+      rgba(216, 95, 163, 0.18) 0%,
+      rgba(30, 27, 46, 0.45) 45%,
+      rgba(245, 208, 96, 0.14) 100%
+    );
+  }
+
+  .cta-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245, 208, 96, 0.75);
+  }
+
+  .cta-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #f5d060;
+    text-shadow: 0 0 18px rgba(245, 208, 96, 0.55);
+    margin: 0;
+  }
+</style>
+
+<script>
+  const card = document.querySelector('.flip-card') as HTMLElement;
+  const inner = card?.querySelector('.flip-inner') as HTMLElement;
+  let resetTimer: ReturnType<typeof setTimeout>;
+
+  card?.addEventListener('mouseenter', () => {
+    clearTimeout(resetTimer);
+    // freeze tease at current position, then transition to flipped
+    inner.style.animation = 'none';
+    inner.getBoundingClientRect(); // force reflow
+    inner.style.transform = 'rotateY(180deg)';
+  });
+
+  card?.addEventListener('mouseleave', () => {
+    // transition back, then re-enable tease animation
+    inner.style.transform = 'rotateY(0deg)';
+    resetTimer = setTimeout(() => {
+      inner.style.animation = '';
+      inner.style.transform = '';
+    }, 750); // matches transition duration
+  });
+</script>
