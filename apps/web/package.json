@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "bun --bun x astro dev",
     "build": "bun --bun x astro build",
-    "preview": "bun --bun x astro preview"
+    "preview": "bun --bun x astro preview",
+    "db:seed": "DB_PATH=./portfolio.db bun ../../packages/data/src/seed.ts"
   },
   "dependencies": {
     "@astrojs/node": "^9.0.0",

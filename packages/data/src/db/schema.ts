@@ -1,10 +1,14 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
+export const PROJECT_CATEGORIES = ['website', 'cli', 'api', 'library', 'tool', 'other'] as const;
+export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
+
 export const projects = sqliteTable('projects', {
   id: text('id').primaryKey(),
   title: text('title').notNull(),
   description: text('description').notNull(),
+  category: text('category').$type<ProjectCategory>().notNull().default('other'),
   tags: text('tags').notNull().default('[]'),
   url: text('url'),
   repo_url: text('repo_url'),
@@ -20,12 +24,13 @@ export const github_activity = sqliteTable('github_activity', {
   occurred_at: text('occurred_at').notNull(),
 });
 
-export const blog_posts = sqliteTable('blog_posts', {
+export const work_experience = sqliteTable('work_experience', {
   id: text('id').primaryKey(),
-  title: text('title').notNull(),
-  slug: text('slug').notNull().unique(),
-  excerpt: text('excerpt'),
-  content: text('content'),
-  published: integer('published', { mode: 'boolean' }).notNull().default(false),
-  published_at: text('published_at'),
+  company: text('company').notNull(),
+  role: text('role').notNull(),
+  description: text('description'),
+  start_date: text('start_date').notNull(),
+  end_date: text('end_date'),
+  current: integer('current', { mode: 'boolean' }).notNull().default(false),
+  tags: text('tags').notNull().default('[]'),
 });

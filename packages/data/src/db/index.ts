@@ -13,6 +13,7 @@ export function getDb() {
   sqlite.exec(`
     CREATE TABLE IF NOT EXISTS projects (
       id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL,
+      category TEXT NOT NULL DEFAULT 'other',
       tags TEXT NOT NULL DEFAULT '[]', url TEXT, repo_url TEXT,
       featured INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -21,10 +22,11 @@ export function getDb() {
       id TEXT PRIMARY KEY, type TEXT NOT NULL, repo TEXT NOT NULL,
       message TEXT, occurred_at TEXT NOT NULL
     );
-    CREATE TABLE IF NOT EXISTS blog_posts (
-      id TEXT PRIMARY KEY, title TEXT NOT NULL,
-      slug TEXT NOT NULL UNIQUE, excerpt TEXT, content TEXT,
-      published INTEGER NOT NULL DEFAULT 0, published_at TEXT
+    CREATE TABLE IF NOT EXISTS work_experience (
+      id TEXT PRIMARY KEY, company TEXT NOT NULL, role TEXT NOT NULL,
+      description TEXT, start_date TEXT NOT NULL, end_date TEXT,
+      current INTEGER NOT NULL DEFAULT 0,
+      tags TEXT NOT NULL DEFAULT '[]'
     );
   `);
   _db = drizzle(sqlite, { schema });

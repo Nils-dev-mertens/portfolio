@@ -7,6 +7,7 @@ const data: (typeof projects.$inferInsert)[] = [
     title: 'Playwright Test Suite',
     description:
       'End-to-end test framework voor een web applicatie met CI/CD integratie via GitHub Actions. Automatisch draaien bij elke pull request.',
+    category: 'tool',
     tags: JSON.stringify(['TypeScript', 'Playwright', 'CI/CD', 'GitHub Actions']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/playwright-test-suite',
@@ -17,6 +18,7 @@ const data: (typeof projects.$inferInsert)[] = [
     title: 'Docker Home Server',
     description:
       'Self-hosted VPS setup met Docker Compose, Nginx reverse proxy en diverse services. Volledig gedocumenteerd als infra-as-code.',
+    category: 'tool',
     tags: JSON.stringify(['Docker', 'Nginx', 'Linux', 'Bash']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/docker-home-server',
@@ -27,6 +29,7 @@ const data: (typeof projects.$inferInsert)[] = [
     title: 'Portfolio Site',
     description:
       'Deze website — gebouwd met Astro, SQLite via bun:sqlite en een Turborepo monorepo. Server islands voor dynamische secties.',
+    category: 'website',
     tags: JSON.stringify(['Astro', 'SQLite', 'Bun', 'TypeScript']),
     url: 'https://nilsmertens.dev',
     repo_url: 'https://github.com/Nils-Dev-Mertens/portfolio',
@@ -37,6 +40,7 @@ const data: (typeof projects.$inferInsert)[] = [
     title: 'REST API (.NET)',
     description:
       'RESTful API gebouwd met ASP.NET Core. Inclusief authenticatie, validatie en Swagger documentatie.',
+    category: 'api',
     tags: JSON.stringify(['C#', '.NET', 'ASP.NET', 'REST API']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/rest-api-dotnet',
@@ -47,6 +51,7 @@ const data: (typeof projects.$inferInsert)[] = [
     title: 'Vue Dashboard',
     description:
       'Data dashboard gebouwd met Vue 3 en TypeScript. Visualiseert real-time data via een Node.js backend.',
+    category: 'website',
     tags: JSON.stringify(['Vue', 'TypeScript', 'Node.js', 'Dashboard']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/vue-dashboard',
