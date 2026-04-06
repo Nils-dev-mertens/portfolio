@@ -1,34 +1,31 @@
-export const CREATE_PROJECTS = `
-  CREATE TABLE IF NOT EXISTS projects (
-    id          TEXT PRIMARY KEY,
-    title       TEXT NOT NULL,
-    description TEXT NOT NULL,
-    tags        TEXT NOT NULL DEFAULT '[]',
-    url         TEXT,
-    repo_url    TEXT,
-    featured    INTEGER NOT NULL DEFAULT 0,
-    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
-  )
-`;
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
-export const CREATE_GITHUB_ACTIVITY = `
-  CREATE TABLE IF NOT EXISTS github_activity (
-    id          TEXT PRIMARY KEY,
-    type        TEXT NOT NULL,
-    repo        TEXT NOT NULL,
-    message     TEXT,
-    occurred_at TEXT NOT NULL
-  )
-`;
+export const projects = sqliteTable('projects', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  tags: text('tags').notNull().default('[]'),
+  url: text('url'),
+  repo_url: text('repo_url'),
+  featured: integer('featured', { mode: 'boolean' }).notNull().default(false),
+  created_at: text('created_at').notNull().default(sql`(datetime('now'))`),
+});
 
-export const CREATE_BLOG_POSTS = `
-  CREATE TABLE IF NOT EXISTS blog_posts (
-    id          TEXT PRIMARY KEY,
-    title       TEXT NOT NULL,
-    slug        TEXT NOT NULL UNIQUE,
-    excerpt     TEXT,
-    content     TEXT,
-    published   INTEGER NOT NULL DEFAULT 0,
-    published_at TEXT
-  )
-`;
+export const github_activity = sqliteTable('github_activity', {
+  id: text('id').primaryKey(),
+  type: text('type').notNull(),
+  repo: text('repo').notNull(),
+  message: text('message'),
+  occurred_at: text('occurred_at').notNull(),
+});
+
+export const blog_posts = sqliteTable('blog_posts', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
+  excerpt: text('excerpt'),
+  content: text('content'),
+  published: integer('published', { mode: 'boolean' }).notNull().default(false),
+  published_at: text('published_at'),
+});

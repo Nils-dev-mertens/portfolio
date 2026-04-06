@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "seed": "bun packages/data/src/seed.ts",
+    "seed": "DB_PATH=apps/web/portfolio.db bun packages/data/src/seed.ts",
     "start": "bun apps/web/dist/server/entry.mjs"
   },
   "packageManager": "bun@1.2.5",

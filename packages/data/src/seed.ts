@@ -1,6 +1,7 @@
 import { getDb } from './db';
+import { projects } from './db/schema';
 
-const projects = [
+const data: (typeof projects.$inferInsert)[] = [
   {
     id: 'playwright-test-suite',
     title: 'Playwright Test Suite',
@@ -9,7 +10,7 @@ const projects = [
     tags: JSON.stringify(['TypeScript', 'Playwright', 'CI/CD', 'GitHub Actions']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/playwright-test-suite',
-    featured: 1,
+    featured: true,
   },
   {
     id: 'docker-home-server',
@@ -19,7 +20,7 @@ const projects = [
     tags: JSON.stringify(['Docker', 'Nginx', 'Linux', 'Bash']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/docker-home-server',
-    featured: 1,
+    featured: true,
   },
   {
     id: 'portfolio-site',
@@ -29,7 +30,7 @@ const projects = [
     tags: JSON.stringify(['Astro', 'SQLite', 'Bun', 'TypeScript']),
     url: 'https://nilsmertens.dev',
     repo_url: 'https://github.com/Nils-Dev-Mertens/portfolio',
-    featured: 1,
+    featured: true,
   },
   {
     id: 'rest-api-dotnet',
@@ -39,7 +40,7 @@ const projects = [
     tags: JSON.stringify(['C#', '.NET', 'ASP.NET', 'REST API']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/rest-api-dotnet',
-    featured: 0,
+    featured: false,
   },
   {
     id: 'vue-dashboard',
@@ -49,20 +50,13 @@ const projects = [
     tags: JSON.stringify(['Vue', 'TypeScript', 'Node.js', 'Dashboard']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/vue-dashboard',
-    featured: 0,
+    featured: false,
   },
 ];
 
 const db = getDb();
 
-db.exec('DELETE FROM projects');
+db.delete(projects).run();
+db.insert(projects).values(data).run();
 
-const insert = db.prepare(
-  'INSERT INTO projects (id, title, description, tags, url, repo_url, featured) VALUES (?, ?, ?, ?, ?, ?, ?)'
-);
-
-for (const p of projects) {
-  insert.run(p.id, p.title, p.description, p.tags, p.url, p.repo_url, p.featured);
-}
-
-console.log(`Seeded ${projects.length} projects into portfolio.db`);
+console.log(`Seeded ${data.length} projects into portfolio.db`);

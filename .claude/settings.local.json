@@ -4,7 +4,10 @@
       "WebSearch",
       "WebFetch(domain:ui.shadcn.com)",
       "Bash(bun remove:*)",
-      "Bash(bun add:*)"
+      "Bash(bun add:*)",
+      "Bash(cat packages/data/src/db/*.ts)",
+      "Bash(cat packages/data/src/queries/*.ts)",
+      "Bash(bun run:*)"
     ]
   }
 }

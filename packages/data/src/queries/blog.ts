@@ -1,20 +1,15 @@
+import { eq, desc } from 'drizzle-orm';
 import { getDb } from '../db';
+import { blog_posts } from '../db/schema';
 
-export interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  content: string | null;
-  published: boolean;
-  published_at: string | null;
-}
+export type BlogPost = typeof blog_posts.$inferSelect;
 
 export function getBlogPosts(): BlogPost[] {
   const db = getDb();
-  const rows = db
-    .prepare('SELECT * FROM blog_posts WHERE published = 1 ORDER BY published_at DESC')
-    .all() as (Omit<BlogPost, 'published'> & { published: number })[];
-
-  return rows.map((row) => ({ ...row, published: row.published === 1 }));
+  return db
+    .select()
+    .from(blog_posts)
+    .where(eq(blog_posts.published, true))
+    .orderBy(desc(blog_posts.published_at))
+    .all();
 }

@@ -1,50 +1,20 @@
+import { eq, desc } from 'drizzle-orm';
 import { getDb } from '../db';
+import { projects } from '../db/schema';
 
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  url: string | null;
-  repo_url: string | null;
-  featured: boolean;
-  created_at: string;
-}
-
-interface ProjectRow {
-  id: string;
-  title: string;
-  description: string;
-  tags: string;
-  url: string | null;
-  repo_url: string | null;
-  featured: number;
-  created_at: string;
-}
+export type Project = Omit<typeof projects.$inferSelect, 'tags'> & { tags: string[] };
 
 export function getProjects(opts: { featured?: boolean; limit?: number } = {}): Project[] {
   const db = getDb();
 
-  let sql = 'SELECT * FROM projects';
-  const params: (string | number)[] = [];
+  const rows = db
+    .select()
+    .from(projects)
+    .$dynamic()
+    .where(opts.featured !== undefined ? eq(projects.featured, opts.featured) : undefined)
+    .orderBy(desc(projects.created_at))
+    .limit(opts.limit ?? -1)
+    .all();
 
-  if (opts.featured !== undefined) {
-    sql += ' WHERE featured = ?';
-    params.push(opts.featured ? 1 : 0);
-  }
-
-  sql += ' ORDER BY created_at DESC';
-
-  if (opts.limit !== undefined) {
-    sql += ' LIMIT ?';
-    params.push(opts.limit);
-  }
-
-  const rows = db.prepare(sql).all(...params) as ProjectRow[];
-
-  return rows.map((row) => ({
-    ...row,
-    tags: JSON.parse(row.tags) as string[],
-    featured: row.featured === 1,
-  }));
+  return rows.map((row) => ({ ...row, tags: JSON.parse(row.tags) as string[] }));
 }

@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview"
+    "dev": "bun --bun x astro dev",
+    "build": "bun --bun x astro build",
+    "preview": "bun --bun x astro preview"
   },
   "dependencies": {
     "@astrojs/node": "^9.0.0",
