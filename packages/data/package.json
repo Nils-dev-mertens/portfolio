@@ -10,7 +10,8 @@
     "dev": "bun src/run-scheduler.ts",
     "build": "echo 'data package — no build step'",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "DB_PATH=../../apps/web/portfolio.db bun src/seed.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2"

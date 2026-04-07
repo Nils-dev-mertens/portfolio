@@ -1,5 +1,5 @@
 import { getDb } from './db';
-import { projects } from './db/schema';
+import { projects, work_experience } from './db/schema';
 
 const data: (typeof projects.$inferInsert)[] = [
   {
@@ -59,9 +59,47 @@ const data: (typeof projects.$inferInsert)[] = [
   },
 ];
 
+const workExperienceData: (typeof work_experience.$inferInsert)[] = [
+  {
+    id: 'zorgi-test-automation',
+    company: 'ZORGI',
+    role: 'Test Automation Engineer',
+    description:
+      'Test automation engineer binnen een zorggerelateerde applicatieomgeving. Schrijven en uitvoeren van geautomatiseerde end-to-end tests.',
+    start_date: '2025-07-01',
+    end_date: '2025-08-31',
+    current: false,
+    tags: JSON.stringify(['Playwright', 'Test Automation', 'CI/CD']),
+  },
+  {
+    id: 'wexso-lead-media-web',
+    company: 'WEXSO BV',
+    role: 'Lead Media/Web',
+    description:
+      'Lead rol in media en webontwikkeling. Verantwoordelijk voor frontend development, contentontwikkeling en technisch beheer van webprojecten.',
+    start_date: '2024-06-01',
+    end_date: '2024-11-30',
+    current: false,
+    tags: JSON.stringify(['Web Development', 'Frontend', 'Media']),
+  },
+  {
+    id: 'adminesstration-media-web',
+    company: 'Adminesstration.be',
+    role: 'Media/Web',
+    description: 'Kortlopende media/web opdracht.',
+    start_date: '2024-02-01',
+    end_date: '2024-02-28',
+    current: false,
+    tags: JSON.stringify(['Web', 'Media']),
+  },
+];
+
 const db = getDb();
 
 db.delete(projects).run();
 db.insert(projects).values(data).run();
 
-console.log(`Seeded ${data.length} projects into portfolio.db`);
+db.delete(work_experience).run();
+db.insert(work_experience).values(workExperienceData).run();
+
+console.log(`Seeded ${data.length} projects and ${workExperienceData.length} work experience entries into portfolio.db`);
