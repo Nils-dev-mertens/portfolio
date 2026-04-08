@@ -4,6 +4,15 @@ import SectionHeader from './SectionHeader.astro';
 import ProjectCard from './ProjectCard.astro';
 
 const projects = getProjects({ featured: true, limit: 3 });
+
+// Preview bento — distinct from the /projects page:
+// Row 1: [col-5 compact] [col-7 wide]   ← compact leads, featured lands on right
+// Row 2: [col-12 wide]                   ← full-width showcase closer
+const spans: Array<{ col: string; wide: boolean }> = [
+  { col: 'md:col-span-5', wide: false },
+  { col: 'md:col-span-7', wide: false  },
+  { col: 'md:col-span-12', wide: false  },
+];
 ---
 
 <section class="py-16">
@@ -14,10 +23,15 @@ const projects = getProjects({ featured: true, limit: 3 });
       ctaHref="/projects"
       ctaLabel="Alle projecten"
     />
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {projects.map((project) => (
-        <ProjectCard project={project} />
-      ))}
+    <div class="grid grid-cols-12 gap-4 items-stretch">
+      {projects.map((project, i) => {
+        const { col, wide } = spans[i] ?? { col: 'md:col-span-4', wide: false };
+        return (
+          <div class={`col-span-12 ${col} h-full`}>
+            <ProjectCard project={project} wide={wide} />
+          </div>
+        );
+      })}
     </div>
   </div>
 </section>

@@ -5,20 +5,73 @@ import ProjectCard from '../components/ProjectCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 
 const projects = getProjects();
+
+// 10-card bento cycle — 4 distinct row shapes before repeating:
+// Row A [7][5]  →  Row B [3][4][5]  →  Row C [5][7]  →  Row D [4][4][4]
+const bentoPattern: Array<{ col: string; wide: boolean }> = [
+  { col: 'col-span-7', wide: true  }, // A-left
+  { col: 'col-span-5', wide: false }, // A-right
+  { col: 'col-span-3', wide: false }, // B-left
+  { col: 'col-span-4', wide: false }, // B-mid
+  { col: 'col-span-5', wide: false }, // B-right
+  { col: 'col-span-5', wide: false }, // C-left
+  { col: 'col-span-7', wide: true  }, // C-right
+  { col: 'col-span-4', wide: false }, // D-left
+  { col: 'col-span-4', wide: false }, // D-mid
+  { col: 'col-span-4', wide: false }, // D-right
+];
+
+function getBento(i: number) {
+  return bentoPattern[i % bentoPattern.length];
+}
 ---
 
 <BaseLayout
   title="Projecten — Nils Mertens"
   description="Alle open source projecten van Nils Mertens: web apps, CLI tools, DevOps setups en automatiseringsscripts."
 >
-  <section class="pt-16">
+  <section class="pt-16 pb-24">
     <div class="container">
-      <SectionHeader label="Portfolio" title="Alle projecten" />
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map((project) => (
-          <ProjectCard project={project} />
-        ))}
+      <div class="page-fade">
+        <SectionHeader label="Portfolio" title="Alle projecten" />
+      </div>
+      <div class="grid grid-cols-12 gap-4 items-stretch">
+        {projects.map((project, i) => {
+          const { col, wide } = getBento(i);
+          return (
+            <div
+              class={`col-span-12 md:${col} card-reveal h-full`}
+              style={`--delay: ${Math.min(i * 80, 480)}ms`}
+            >
+              <ProjectCard project={project} />
+            </div>
+          );
+        })}
       </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-fade {
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .card-reveal {
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: var(--delay, 0ms);
+  }
+</style>
