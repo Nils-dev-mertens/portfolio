@@ -4,69 +4,83 @@ import { getWorkExperience } from '../../../../packages/data';
 const jobs = getWorkExperience();
 
 function formatPeriod(start: string, end: string | null, current: boolean) {
-  const fmt = (d: string) => {
-    const date = new Date(d);
-    return date.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
-  };
+  const fmt = (d: string) =>
+    new Date(d).toLocaleDateString('nl-NL', { month: 'short', year: 'numeric' });
   const endLabel = current ? 'heden' : end ? fmt(end) : '';
   return `${fmt(start)} – ${endLabel}`;
 }
-
-console.log("this is a test")
-console.log(jobs)
 ---
 
 <section class="border-t border-border py-16">
   <div class="container">
-    <div class="mb-12">
+    <div class="mb-8">
       <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
         Werkervaring
       </span>
       <h2 class="text-[30px] font-bold leading-tight text-primary">Waar ik gewerkt heb</h2>
     </div>
 
-    <!-- Timeline wrapper -->
-    <div class="relative">
-      <!-- Center line (hidden on mobile) -->
-      <div class="hidden md:block absolute left-1/2 -translate-x-px top-0 bottom-0 w-px bg-white/8" />
+    <div class="flex flex-col">
+      {jobs.map((job, i) => (
+        <div class={`job-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md cursor-default ${i !== 0 ? 'border-t border-border' : ''}`}>
 
-      <div class="flex flex-col gap-12">
-        {jobs.map((job, i) => {
-          const isLeft = i % 2 === 0;
-          return (
-            <div class={`relative flex flex-col md:flex-row items-start gap-6 md:gap-0 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-              <!-- Card -->
-              <div class={`w-full md:w-[calc(50%-2rem)] ${isLeft ? 'md:pr-8 md:text-right' : 'md:pl-8'}`}>
-                <div class="bg-card border border-border rounded-lg p-6 flex flex-col gap-3 hover:border-pink/40 transition-colors">
-                  <div class={`flex flex-wrap gap-2 items-center ${isLeft ? 'md:justify-end' : ''}`}>
-                    <span class="text-[11px] font-medium text-foreground/50">
-                      {formatPeriod(job.start_date, job.end_date, job.current)}
-                    </span>
-                    {job.current && (
-                      <span class="tag bg-pink/10 text-pink border-pink/20">Huidig</span>
-                    )}
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-semibold text-primary">{job.company}</h3>
-                    <p class="text-foreground/70 italic mt-0.5">{job.role}</p>
-                  </div>
-                  {job.description && (
-                    <p class="text-foreground/80 leading-relaxed text-sm">{job.description}</p>
-                  )}
-                  {job.tags.length > 0 && (
-                    <div class={`flex flex-wrap gap-1 ${isLeft ? 'md:justify-end' : ''}`}>
-                      {job.tags.map((tag) => <span class="tag">{tag}</span>)}
-                    </div>
-                  )}
-                </div>
+          <!-- Left accent bar (revealed on hover) -->
+          <div class="accent-bar absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-pink opacity-0 transition-opacity duration-200" />
+
+          <!-- Company initial avatar -->
+          <div class="shrink-0 size-9 rounded-md bg-card border border-border flex items-center justify-center text-sm font-bold text-foreground/80">
+            {job.company.charAt(0).toUpperCase()}
+          </div>
+
+          <!-- Main content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline justify-between gap-4 flex-wrap">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-sm font-semibold text-foreground">
+                  {job.company}
+                </span>
+                <span class="text-foreground/40 text-xs">·</span>
+                <span class="text-xs text-foreground/70 italic">{job.role}</span>
+                {job.current && (
+                  <span class="tag bg-pink/10 text-pink border-pink/20 text-[10px] py-0 leading-5">Huidig</span>
+                )}
               </div>
-
-              <!-- Center dot -->
-              <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 top-6 size-3 rounded-full bg-pink border-2 border-background z-10" />
+              <span class="text-[11px] text-foreground/55 shrink-0 tabular-nums">
+                {formatPeriod(job.start_date, job.end_date, job.current)}
+              </span>
             </div>
-          );
-        })}
-      </div>
+
+            {job.description && (
+              <p class="text-sm text-foreground/75 leading-relaxed mt-1">{job.description}</p>
+            )}
+
+            {job.tags.length > 0 && (
+              <div class="flex flex-wrap gap-1 mt-2">
+                {job.tags.map((tag) => (
+                  <span class="inline-block py-0.5 px-2 rounded text-[10px] font-medium uppercase tracking-[0.05em] text-foreground/60 bg-white/5 border border-white/10">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+        </div>
+      ))}
     </div>
   </div>
 </section>
+
+<style>
+  .job-row {
+    transition: background-color 250ms ease;
+  }
+
+  .job-row:hover {
+    background-color: rgba(255, 255, 255, 0.018);
+  }
+
+  .job-row:hover .accent-bar {
+    opacity: 1;
+  }
+</style>
