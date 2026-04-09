@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import SkillsGrid from '../components/SkillsGrid.astro';
+import WorkExperience from '../components/WorkExperience.astro';
+import ContactStrip from '../components/ContactStrip.astro';
 ---
 
 <BaseLayout
@@ -62,29 +64,9 @@ import SkillsGrid from '../components/SkillsGrid.astro';
       </section>
 
       <!-- Work experience -->
-      <section class="py-16 border-b border-border">
-        <SectionHeader label="Werkervaring" title="Waar ik gewerkt heb" />
-        <div class="border-l-2 border-white/8 pl-8 ml-2 flex flex-col">
-          {[
-            { type: 'Stage', period: 'Juli 2025 – Augustus 2025', company: 'ZORGI', role: 'Test Automation Engineer', desc: 'Werkte als test automation engineer binnen een zorggerelateerde applicatieomgeving. Schrijven en uitvoeren van geautomatiseerde end-to-end tests, integratie met CI/CD pipeline.' },
-            { type: 'Freelance', period: 'Juni 2024 – November 2024', company: 'WEXSO BV', role: 'Lead Media/Web', desc: 'Lead rol in media en webontwikkeling. Verantwoordelijk voor frontend development, contentontwikkeling en technisch beheer van webprojecten.' },
-            { type: 'Opdracht', period: 'Februari 2024', company: 'Adminesstration.be', role: 'Media/Web', desc: 'Kortlopende media/web opdracht.' },
-          ].map((job) => (
-            <div class="relative pb-8 last:pb-0">
-              <div class="absolute -left-9.25 top-1 size-2.5 rounded-full bg-pink border-2 border-background" />
-              <div class="flex flex-col gap-2">
-                <div class="flex gap-4 items-center">
-                  <span class="tag">{job.type}</span>
-                  <span class="text-[11px] font-medium text-foreground/50">{job.period}</span>
-                </div>
-                <h3 class="text-xl font-medium text-primary">{job.company}</h3>
-                <p class="text-foreground/70 italic">{job.role}</p>
-                <p class="text-foreground leading-relaxed max-w-150">{job.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div class="border-b border-border">
+        <WorkExperience server:defer />
+      </div>
 
       <!-- Education -->
       <section class="py-16">
@@ -108,4 +90,5 @@ import SkillsGrid from '../components/SkillsGrid.astro';
 
     </div>
   </div>
+  <ContactStrip />
 </BaseLayout>
