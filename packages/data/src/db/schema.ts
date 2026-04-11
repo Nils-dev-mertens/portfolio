@@ -34,3 +34,26 @@ export const work_experience = sqliteTable('work_experience', {
   current: integer('current', { mode: 'boolean' }).notNull().default(false),
   tags: text('tags').notNull().default('[]'),
 });
+
+export const education = sqliteTable('education', {
+  id: text('id').primaryKey(),
+  institution: text('institution').notNull(),
+  program: text('program').notNull(),
+  description: text('description'),
+  start_date: text('start_date').notNull(),
+  end_date: text('end_date'),
+});
+
+export const about = sqliteTable('about', {
+  id: text('id').primaryKey(),
+  location: text('location').notNull(),
+  email: text('email').notNull(),
+  github_url: text('github_url').notNull(),
+  status_label: text('status_label').notNull(),
+  status_active: integer('status_active', { mode: 'boolean' }).notNull().default(true),
+  tagline: text('tagline').notNull(),
+  quote: text('quote').notNull(),
+  quote_sub: text('quote_sub').notNull(),
+  bio_landing: text('bio_landing').notNull().default('[]'),
+  bio_about: text('bio_about').notNull().default('[]'),
+});

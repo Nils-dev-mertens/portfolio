@@ -1,5 +1,5 @@
 import { getDb } from './db';
-import { projects, work_experience } from './db/schema';
+import { projects, work_experience, education, about } from './db/schema';
 
 const data: (typeof projects.$inferInsert)[] = [
   {
@@ -94,6 +94,45 @@ const workExperienceData: (typeof work_experience.$inferInsert)[] = [
   },
 ];
 
+const educationData: (typeof education.$inferInsert)[] = [
+  {
+    id: 'ap-hogeschool',
+    institution: 'AP Hogeschool — Antwerpen',
+    program: 'Graduaat Programmeren',
+    description: 'Technische opleiding gericht op softwareontwikkeling. Focus op fullstack development, OOP en projectwerk.',
+    start_date: '2023-09-01',
+    end_date: null,
+  },
+  {
+    id: 'cadix',
+    institution: 'Cadix — Noorderlaan, Antwerpen',
+    program: 'Opleiding Multimedia',
+    description: 'Opleiding met focus op multimedia, web en digitale media.',
+    start_date: '2022-09-01',
+    end_date: '2023-06-30',
+  },
+];
+
+const aboutData: (typeof about.$inferInsert) = {
+  id: 'main',
+  location: 'Antwerpen, België',
+  email: 'nilsdevmertens@gmail.com',
+  github_url: 'https://github.com/Nils-Dev-Mertens',
+  status_label: 'Open voor freelance',
+  status_active: true,
+  tagline: 'Code, Automate, Deploy — van frontend tot infra, van pipelines tot scripts.',
+  quote: 'Als het mij boeit, gaat er alles in.',
+  quote_sub: 'Niet omdat het moet — omdat het telt.',
+  bio_landing: JSON.stringify([
+    'Ik ben Nils — een junior developer uit Antwerpen met een brede interesse in alles wat met code te maken heeft. Van frontend tot backend, van pipelines tot scripts: ik vind het allemaal interessant.',
+    'Momenteel studeer ik nog, maar doe ondertussen al werkervaring op via stages en bijklussen. Mijn DevOps kennis is grotendeels zelfgeleerd — toegepast op mijn eigen home server setup.',
+  ]),
+  bio_about: JSON.stringify([
+    'Passie is het verschil tussen afvinken en bouwen. Als een project mij raakt — technisch, creatief of conceptueel — investeer ik er meer in dan gevraagd. Niet omdat het verwacht wordt, maar omdat ik het wil zien werken.',
+    'Dat zie je terug in mijn keuzes: TypeScript, Astro, open source, self-hosted infra. Geen tools uit gemak — tools die ik begrijp en in geloof. Mijn DevOps kennis is volledig zelfgeleerd, toegepast op een eigen home server met Docker en Nginx. Hands-on leren is de enige manier die voor mij werkt.',
+  ]),
+};
+
 const db = getDb();
 
 db.delete(projects).run();
@@ -102,4 +141,10 @@ db.insert(projects).values(data).run();
 db.delete(work_experience).run();
 db.insert(work_experience).values(workExperienceData).run();
 
-console.log(`Seeded ${data.length} projects and ${workExperienceData.length} work experience entries into portfolio.db`);
+db.delete(education).run();
+db.insert(education).values(educationData).run();
+
+db.delete(about).run();
+db.insert(about).values(aboutData).run();
+
+console.log(`Seeded ${data.length} projects, ${workExperienceData.length} work experience entries, ${educationData.length} education entries, and about data into portfolio.db`);

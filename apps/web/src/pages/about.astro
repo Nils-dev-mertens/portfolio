@@ -4,6 +4,12 @@ import SectionHeader from '../components/SectionHeader.astro';
 import SkillsGrid from '../components/SkillsGrid.astro';
 import WorkExperience from '../components/WorkExperience.astro';
 import ContactStrip from '../components/ContactStrip.astro';
+import { getAbout, getEducation } from '@portfolio/data';
+
+const about = getAbout();
+const education = getEducation();
+
+const githubLabel = about?.github_url.replace('https://github.com/', '') ?? '';
 ---
 
 <BaseLayout
@@ -13,47 +19,61 @@ import ContactStrip from '../components/ContactStrip.astro';
   <div class="pt-16">
     <div class="container">
 
-      <!-- Bio -->
-      <section class="pb-16 border-b border-border last:border-none">
-        <SectionHeader label="Profiel" title="Over Nils Mertens" />
-        <div class="flex flex-col gap-4 max-w-180">
-          <p class="text-foreground leading-[1.7]">
-            Ik ben Nils — een junior developer uit Antwerpen met een brede interesse in alles wat
-            met code te maken heeft. Van frontend tot backend, van pipelines tot scripts: ik vind
-            het allemaal interessant. Mijn kijk op "fullstack" stopt niet bij UI en API — het
-            omvat ook de lagen daaromheen: deployment, automatisering, infrastructuur.
+      <!-- Bio — quote as hero -->
+      <section class="border-b border-border">
+
+        <!-- Hero quote — full width, centered, lots of breathing room -->
+        <div class="flex flex-col items-center text-center py-16 md:py-24">
+          <p class="text-[clamp(2.5rem,7vw,5rem)] font-bold leading-[1.05] text-primary max-w-4xl">
+            {about?.quote}
           </p>
-          <p class="text-foreground leading-[1.7]">
-            Momenteel studeer ik nog aan AP Hogeschool, maar ik doe ondertussen al werkervaring
-            op via stages en bijklussen. Alles wat ik bouw is publiek op GitHub — open source
-            minded, hands-on aanpak.
+          <p class="mt-6 text-[clamp(1rem,2vw,1.2rem)] font-medium text-foreground/30 max-w-md leading-[1.4]">
+            {about?.quote_sub}
           </p>
-          <p class="text-foreground leading-[1.7]">
-            Mijn DevOps kennis is grotendeels zelfgeleerd: toegepast op een eigen home server
-            setup met Docker, Nginx en diverse zelf-gehoste services.
-          </p>
-          <div class="flex flex-col gap-2 mt-2 p-4 bg-card border border-border rounded-lg max-w-100">
-            <div class="flex gap-4 items-center">
-              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">Locatie</span>
-              <span class="text-foreground">Antwerpen, België</span>
-            </div>
-            <div class="flex gap-4 items-center">
-              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">E-mail</span>
-              <a href="mailto:nilsdevmertens@gmail.com" class="text-primary hover:underline">nilsdevmertens@gmail.com</a>
-            </div>
-            <div class="flex gap-4 items-center">
-              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">GitHub</span>
-              <a href="https://github.com/Nils-Dev-Mertens" target="_blank" rel="noopener" class="text-primary hover:underline">
-                Nils-Dev-Mertens
-              </a>
-            </div>
-            <div class="flex gap-4 items-center">
-              <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-foreground/50 min-w-20">Status</span>
-              <span class="inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 border border-primary/30">
-                Open voor freelance
-              </span>
-            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="border-t border-border" />
+
+        <!-- Body + metadata -->
+        <div class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-12 items-start py-16">
+
+          <!-- Left: body text -->
+          <div class="flex flex-col gap-4">
+            {about?.bio_about.map((paragraph) => (
+              <p class="text-foreground leading-[1.7]">{paragraph}</p>
+            ))}
           </div>
+
+          <!-- Right: keyline metadata -->
+          <dl class="flex flex-col">
+            {[
+              { label: 'Locatie', value: about?.location ?? '',        href: null },
+              { label: 'E-mail',  value: about?.email ?? '',           href: `mailto:${about?.email}` },
+              { label: 'GitHub',  value: githubLabel,                  href: about?.github_url ?? null },
+            ].map((row) => (
+              <div class="flex items-center justify-between py-3 border-b border-border">
+                <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">{row.label}</dt>
+                <dd>
+                  {row.href
+                    ? <a href={row.href} target={row.href.startsWith('http') ? '_blank' : undefined} rel={row.href.startsWith('http') ? 'noopener noreferrer' : undefined} class="text-sm text-primary hover:underline">{row.value}</a>
+                    : <span class="text-sm text-foreground">{row.value}</span>
+                  }
+                </dd>
+              </div>
+            ))}
+            <div class="flex items-center justify-between py-3">
+              <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">Status</dt>
+              <dd>
+                {about?.status_active && (
+                  <span class="inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 border border-primary/30">
+                    {about?.status_label}
+                  </span>
+                )}
+              </dd>
+            </div>
+          </dl>
+
         </div>
       </section>
 
@@ -63,32 +83,55 @@ import ContactStrip from '../components/ContactStrip.astro';
         <SkillsGrid />
       </section>
 
-      <!-- Work experience -->
-      <div class="border-b border-border">
-        <WorkExperience server:defer />
-      </div>
-
-      <!-- Education -->
-      <section class="py-16">
-        <SectionHeader label="Opleiding" title="Achtergrond" />
-        <div class="border-l-2 border-white/8 pl-8 ml-2 flex flex-col">
-          {[
-            { company: 'AP Hogeschool — Antwerpen', role: 'Graduaat Programmeren', desc: 'Technische opleiding gericht op softwareontwikkeling. Focus op fullstack development, OOP en projectwerk.' },
-            { company: 'Cadix — Noorderlaan, Antwerpen', role: 'Opleiding Multimedia', desc: 'Opleiding met focus op multimedia, web en digitale media.' },
-          ].map((edu) => (
-            <div class="relative pb-8 last:pb-0">
-              <div class="absolute -left-9.25 top-1 size-2.5 rounded-full bg-pink border-2 border-background" />
-              <div class="flex flex-col gap-2">
-                <h3 class="text-xl font-medium text-primary">{edu.company}</h3>
-                <p class="text-foreground/70 italic">{edu.role}</p>
-                <p class="text-foreground leading-relaxed max-w-150">{edu.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
     </div>
   </div>
+
+  <!-- Work experience — has its own container -->
+  <WorkExperience server:defer />
+
+  <!-- Education -->
+  <div class="container">
+    <section class="py-16">
+      <SectionHeader label="Opleiding" title="Achtergrond" />
+      <div class="flex flex-col">
+        {education.map((edu, i) => (
+          <div class={`edu-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md ${i !== 0 ? 'border-t border-border' : ''}`}>
+            <div class="accent-bar absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-primary opacity-0 transition-opacity duration-200" />
+            <div class="shrink-0 size-9 rounded-md bg-card border border-border flex items-center justify-center text-sm font-bold text-foreground/80">
+              {edu.institution.charAt(0)}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-4 flex-wrap">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-sm font-semibold text-foreground">{edu.institution}</span>
+                  <span class="text-foreground/40 text-xs">·</span>
+                  <span class="text-xs text-foreground/70 italic">{edu.program}</span>
+                </div>
+                <span class="text-[11px] text-foreground/55 shrink-0 tabular-nums">
+                  {edu.start_date.slice(0, 4)} – {edu.end_date ? edu.end_date.slice(0, 4) : 'heden'}
+                </span>
+              </div>
+              {edu.description && (
+                <p class="text-sm text-foreground/75 leading-relaxed mt-1">{edu.description}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
   <ContactStrip />
+
+<style>
+  .edu-row {
+    transition: background-color 250ms ease;
+  }
+  .edu-row:hover {
+    background-color: rgba(255, 255, 255, 0.018);
+  }
+  .edu-row:hover .accent-bar {
+    opacity: 1;
+  }
+</style>
 </BaseLayout>

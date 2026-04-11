@@ -1,6 +1,9 @@
 ---
 import nilsPhoto from '../public/images/1732207667226.jpg';
 import { buttonVariants } from "./ui/button";
+import { getAbout } from '@portfolio/data';
+
+const about = getAbout();
 ---
 
 <section class="flex items-center min-h-[calc(80svh-60px)]">
@@ -37,8 +40,7 @@ import { buttonVariants } from "./ui/button";
         Nils Mertens
       </h1>
       <p class="text-foreground/70 text-lg max-w-md leading-[1.7] hero-fade" style="animation-delay: 200ms">
-        Code, Automate, Deploy — van frontend tot infra,
-        van pipelines tot scripts.
+        {about?.tagline}
       </p>
       <div class="flex gap-3 flex-wrap mt-2 hero-fade" style="animation-delay: 320ms">
         <a href="/projects" class={buttonVariants({ size: "lg" })}>Bekijk projecten</a>

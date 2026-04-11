@@ -1,6 +1,9 @@
 ---
 import SectionHeader from './SectionHeader.astro';
 import SkillsGrid from './SkillsGrid.astro';
+import { getAbout } from '@portfolio/data';
+
+const about = getAbout();
 ---
 
 <section class="py-16">
@@ -14,25 +17,21 @@ import SkillsGrid from './SkillsGrid.astro';
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
       <div class="flex flex-col gap-4">
+        {about?.bio_landing.map((paragraph) => (
+          <p class="text-foreground leading-[1.7]">{paragraph}</p>
+        ))}
         <p class="text-foreground leading-[1.7]">
-          Ik ben Nils — een junior developer uit Antwerpen met een brede interesse in alles wat
-          met code te maken heeft. Van frontend tot backend, van pipelines tot scripts: ik vind
-          het allemaal interessant.
-        </p>
-        <p class="text-foreground leading-[1.7]">
-          Momenteel studeer ik nog, maar doe ondertussen al werkervaring op via stages en bijklussen.
-          Mijn DevOps kennis is grotendeels zelfgeleerd — toegepast op mijn eigen home server setup.
-        </p>
-        <p class="text-foreground leading-[1.7]">
-          Alles wat ik bouw is publiek op <a href="https://github.com/Nils-Dev-Mertens" target="_blank" rel="noopener" class="text-primary hover:underline">GitHub</a>.
+          Alles wat ik bouw is publiek op <a href={about?.github_url} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">GitHub</a>.
           Open source minded, hands-on aanpak.
         </p>
         <div class="flex flex-wrap gap-2 mt-2 items-center">
-          <span class="text-[11px] font-medium text-foreground/70">📍 Antwerpen, België</span>
+          <span class="text-[11px] font-medium text-foreground/70">📍 {about?.location}</span>
           <span class="text-[11px] font-medium text-foreground/70">🎓 AP Hogeschool</span>
-          <span class="inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 border border-primary/30">
-            Open voor freelance
-          </span>
+          {about?.status_active && (
+            <span class="inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 border border-primary/30">
+              {about?.status_label}
+            </span>
+          )}
         </div>
       </div>
 
