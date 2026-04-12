@@ -4,9 +4,10 @@ interface Props {
   title: string;
   ctaHref?: string;
   ctaLabel?: string;
+  as?: 'h1' | 'h2';
 }
 
-const { label, title, ctaHref, ctaLabel } = Astro.props;
+const { label, title, ctaHref, ctaLabel, as: Tag = 'h2' } = Astro.props;
 ---
 
 <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
@@ -14,7 +15,7 @@ const { label, title, ctaHref, ctaLabel } = Astro.props;
     <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
       {label}
     </span>
-    <h2 class="text-[30px] font-bold leading-tight text-primary">{title}</h2>
+    <Tag class="text-[30px] font-bold leading-tight text-primary">{title}</Tag>
   </div>
   {ctaHref && (
     <a
