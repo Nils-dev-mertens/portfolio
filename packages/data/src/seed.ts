@@ -3,59 +3,64 @@ import { projects, work_experience, education, about } from './db/schema';
 
 const data: (typeof projects.$inferInsert)[] = [
   {
+    id: 'portfolio-site',
+    title: 'Portfolio Site',
+    description:
+      'Deze website — gebouwd met Astro, SQLite via bun:sqlite en een Turborepo monorepo. Geen CMS, geen cloud database: alles draait op mijn eigen VPS via Docker. Server islands voor dynamische secties, Drizzle ORM voor typeveilige queries en Tailwind voor de styling. Snel, simpel en volledig in eigen beheer.',
+    category: 'website',
+    tags: JSON.stringify(['Astro', 'SQLite', 'Bun', 'TypeScript', 'Docker', 'Drizzle']),
+    url: 'https://nilsmertens.dev',
+    repo_url: 'https://github.com/Nils-Dev-Mertens/portfolio',
+    featured: true,
+    created_at: '2025-10-01T00:00:00',
+  },
+  {
     id: 'playwright-test-suite',
     title: 'Playwright Test Suite',
     description:
-      'End-to-end test framework voor een web applicatie met CI/CD integratie via GitHub Actions. Automatisch draaien bij elke pull request.',
+      'End-to-end testframework voor een webapplicatie met volledige CI/CD integratie via GitHub Actions. De suite dekt kritieke gebruikersflows via het Page Object Model, draait automatisch bij elke pull request en rapporteert resultaten direct in de PR. Stabiel, snel en klaar voor productie.',
     category: 'tool',
     tags: JSON.stringify(['TypeScript', 'Playwright', 'CI/CD', 'GitHub Actions']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/playwright-test-suite',
     featured: true,
+    created_at: '2025-08-01T00:00:00',
   },
   {
     id: 'docker-home-server',
     title: 'Docker Home Server',
     description:
-      'Self-hosted VPS setup met Docker Compose, Nginx reverse proxy en diverse services. Volledig gedocumenteerd als infra-as-code.',
+      'Self-hosted VPS setup met Docker Compose, Nginx reverse proxy en meerdere actieve services. Volledig opgezet als infra-as-code: elke configuratie zit in version control. Inclusief monitoring via Uptime Kuma, automatische SSL via Let\'s Encrypt en een privé Docker registry.',
     category: 'tool',
-    tags: JSON.stringify(['Docker', 'Nginx', 'Linux', 'Bash']),
+    tags: JSON.stringify(['Docker', 'Nginx', 'Linux', 'Bash', 'Let\'s Encrypt']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/docker-home-server',
     featured: true,
-  },
-  {
-    id: 'portfolio-site',
-    title: 'Portfolio Site',
-    description:
-      'Deze website — gebouwd met Astro, SQLite via bun:sqlite en een Turborepo monorepo. Server islands voor dynamische secties.',
-    category: 'website',
-    tags: JSON.stringify(['Astro', 'SQLite', 'Bun', 'TypeScript']),
-    url: 'https://nilsmertens.dev',
-    repo_url: 'https://github.com/Nils-Dev-Mertens/portfolio',
-    featured: true,
+    created_at: '2025-06-01T00:00:00',
   },
   {
     id: 'rest-api-dotnet',
     title: 'REST API (.NET)',
     description:
-      'RESTful API gebouwd met ASP.NET Core. Inclusief authenticatie, validatie en Swagger documentatie.',
+      'RESTful API gebouwd met ASP.NET Core volgens clean architecture principes. Voorzien van JWT authenticatie, request validatie via FluentValidation en volledige Swagger/OpenAPI documentatie. Repository pattern en dependency injection zorgen voor een testbare en uitbreidbare codebase.',
     category: 'api',
-    tags: JSON.stringify(['C#', '.NET', 'ASP.NET', 'REST API']),
+    tags: JSON.stringify(['C#', '.NET', 'ASP.NET', 'REST API', 'JWT', 'Swagger']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/rest-api-dotnet',
     featured: false,
+    created_at: '2025-03-01T00:00:00',
   },
   {
     id: 'vue-dashboard',
     title: 'Vue Dashboard',
     description:
-      'Data dashboard gebouwd met Vue 3 en TypeScript. Visualiseert real-time data via een Node.js backend.',
+      'Interactief data dashboard gebouwd met Vue 3 en TypeScript. Visualiseert real-time data via een Node.js backend met WebSocket verbinding. Inclusief filterbare tabellen, grafieken via Chart.js en een responsief grid-layout dat werkt op desktop en mobiel.',
     category: 'website',
-    tags: JSON.stringify(['Vue', 'TypeScript', 'Node.js', 'Dashboard']),
+    tags: JSON.stringify(['Vue', 'TypeScript', 'Node.js', 'Chart.js', 'WebSocket']),
     url: null,
     repo_url: 'https://github.com/Nils-Dev-Mertens/vue-dashboard',
     featured: false,
+    created_at: '2025-01-01T00:00:00',
   },
 ];
 
@@ -124,12 +129,12 @@ const aboutData: (typeof about.$inferInsert) = {
   quote: 'Als het mij boeit, gaat er alles in.',
   quote_sub: 'Niet omdat het moet — omdat het telt.',
   bio_landing: JSON.stringify([
-    'Ik ben Nils — een junior developer uit Antwerpen met een brede interesse in alles wat met code te maken heeft. Van frontend tot backend, van pipelines tot scripts: ik vind het allemaal interessant.',
+    'Ik ben Nils — een junior developer uit Antwerpen met een brede interesse in alles wat met code te maken heeft. Van frontend tot backend, van pipelines tot scripts: ik vind het allemaal interessant. Quack.',
     'Momenteel studeer ik nog, maar doe ondertussen al werkervaring op via stages en bijklussen. Mijn DevOps kennis is grotendeels zelfgeleerd — toegepast op mijn eigen home server setup.',
   ]),
   bio_about: JSON.stringify([
     'Passie is het verschil tussen afvinken en bouwen. Als een project mij raakt — technisch, creatief of conceptueel — investeer ik er meer in dan gevraagd. Niet omdat het verwacht wordt, maar omdat ik het wil zien werken.',
-    'Dat zie je terug in mijn keuzes: TypeScript, Astro, open source, self-hosted infra. Geen tools uit gemak — tools die ik begrijp en in geloof. Mijn DevOps kennis is volledig zelfgeleerd, toegepast op een eigen home server met Docker en Nginx. Hands-on leren is de enige manier die voor mij werkt.',
+    'Dat zie je terug in mijn keuzes: TypeScript, Astro, open source, self-hosted infra. Geen tools uit gemak — tools die ik begrijp en in geloof. Mijn DevOps kennis is volledig zelfgeleerd, toegepast op een eigen home server met Docker en Nginx. Hands-on leren is de enige manier die voor mij werkt. Kwak.',
   ]),
 };
 

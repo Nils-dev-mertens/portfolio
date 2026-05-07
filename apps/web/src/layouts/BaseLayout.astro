@@ -40,6 +40,15 @@ const ogImage = new URL('/og-default.png', Astro.site ?? Astro.url.origin).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <style>
+      span.duck-word {
+        color: red;
+        cursor: help;
+      }
+    </style>
+    <script>
+      import '../lib/duck-words.ts';
+    </script>
   </head>
   <body>
     <Nav />

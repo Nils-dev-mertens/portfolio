@@ -128,3 +128,23 @@
   margin-inline: auto;
   padding-inline: 2rem;
 }
+
+@keyframes duck-wobble {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(-8deg) scale(1.15); }
+  50%  { transform: rotate(6deg) scale(1.1); }
+  75%  { transform: rotate(-4deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+span.duck-word {
+  color: #f5d060;
+  display: inline-block;
+  cursor: help;
+  transition: text-shadow 0.2s ease;
+}
+
+span.duck-word:hover {
+  animation: duck-wobble 0.4s ease forwards;
+  text-shadow: 0 0 8px rgba(245, 208, 96, 0.8), 0 0 20px rgba(245, 208, 96, 0.4);
+}

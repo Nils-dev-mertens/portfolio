@@ -34,8 +34,14 @@ function getBento(i: number) {
     <div class="container">
       <div class="page-fade">
         <SectionHeader label="Portfolio" title="Alle projecten" as="h1" />
+        <p class="mt-4 max-w-2xl text-muted-foreground text-base leading-relaxed">
+          Ik kwak projecten omdat ik geloof dat je het meeste leert door gewoon te bouwen.
+          Soms is het een probleem dat ik zelf tegenkom, soms pure nieuwsgierigheid naar een technologie,
+          en soms wil ik iets bijdragen aan de open source community. Elk project is een kans om iets
+          nieuws te ontdekken, te experimenteren en beter te worden in mijn vak.
+        </p>
       </div>
-      <div class="grid grid-cols-12 gap-4 items-stretch">
+      <div class="grid grid-cols-12 gap-4 items-stretch mt-10">
         {projects.map((project, i) => {
           const { col, wide } = getBento(i);
           return (
@@ -43,7 +49,7 @@ function getBento(i: number) {
               class={`col-span-12 md:${col} card-reveal h-full`}
               style={`--delay: ${Math.min(i * 80, 480)}ms`}
             >
-              <ProjectCard project={project} />
+              <ProjectCard project={project} isLatest={i === 0} />
             </div>
           );
         })}

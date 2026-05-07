@@ -28,6 +28,18 @@ export function getDb() {
       current INTEGER NOT NULL DEFAULT 0,
       tags TEXT NOT NULL DEFAULT '[]'
     );
+    CREATE TABLE IF NOT EXISTS education (
+      id TEXT PRIMARY KEY, institution TEXT NOT NULL, program TEXT NOT NULL,
+      description TEXT, start_date TEXT NOT NULL, end_date TEXT
+    );
+    CREATE TABLE IF NOT EXISTS about (
+      id TEXT PRIMARY KEY, location TEXT NOT NULL, email TEXT NOT NULL,
+      github_url TEXT NOT NULL, status_label TEXT NOT NULL,
+      status_active INTEGER NOT NULL DEFAULT 1,
+      tagline TEXT NOT NULL, quote TEXT NOT NULL, quote_sub TEXT NOT NULL,
+      bio_landing TEXT NOT NULL DEFAULT '[]',
+      bio_about TEXT NOT NULL DEFAULT '[]'
+    );
   `);
   _db = drizzle(sqlite, { schema });
   return _db;
