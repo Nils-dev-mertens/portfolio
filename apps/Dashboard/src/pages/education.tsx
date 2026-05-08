@@ -13,39 +13,39 @@ export function EducationPage() {
   const [creating, setCreating] = useState(false);
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-1">Content</p>
           <h1 className="text-2xl font-semibold">Education</h1>
         </div>
-        <button
-          onClick={() => setCreating(true)}
-          className="flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium hover:bg-primary/85 transition-opacity"
-        >
-          <Plus className="h-4 w-4" /> New Entry
+        <button onClick={() => setCreating(true)} className="flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium hover:bg-primary/85 transition-opacity shrink-0">
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline">New Entry</span>
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
         {education.map((ed) => (
-          <div key={ed.id} className="group flex items-start gap-4 rounded-xl border border-border bg-card px-5 py-4">
-            <div className="flex-1 min-w-0">
-              <p className="font-medium">{ed.program}</p>
-              <p className="text-sm text-muted-foreground">{ed.institution}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {ed.start_date} — {ed.end_date ?? 'Present'}
-              </p>
-              {ed.description && <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{ed.description}</p>}
+          <div key={ed.id} className="group flex flex-col gap-2 rounded-xl border border-border bg-card px-5 py-4">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="font-medium text-sm">{ed.program}</p>
+                <p className="text-sm text-muted-foreground">{ed.institution}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {ed.start_date} — {ed.end_date ?? 'Present'}
+                </p>
+              </div>
+              <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => setEditing(ed)} className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors">
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => deleteEd.mutate(ed.id)} disabled={deleteEd.isPending} className="rounded-md p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
-            <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => setEditing(ed)} className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors">
-                <Pencil className="h-3.5 w-3.5" />
-              </button>
-              <button onClick={() => deleteEd.mutate(ed.id)} disabled={deleteEd.isPending} className="rounded-md p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
-            </div>
+            {ed.description && <p className="text-sm text-muted-foreground line-clamp-3">{ed.description}</p>}
           </div>
         ))}
       </div>
@@ -73,11 +73,9 @@ function EducationForm({ initial, onSubmit, onCancel, isPending }: {
   isPending?: boolean;
 }) {
   const [form, setForm] = useState({
-    institution: initial?.institution ?? '',
-    program: initial?.program ?? '',
+    institution: initial?.institution ?? '', program: initial?.program ?? '',
     description: initial?.description ?? '',
-    start_date: initial?.start_date ?? '',
-    end_date: initial?.end_date ?? '',
+    start_date: initial?.start_date ?? '', end_date: initial?.end_date ?? '',
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -85,8 +83,7 @@ function EducationForm({ initial, onSubmit, onCancel, isPending }: {
     onSubmit({
       institution: form.institution, program: form.program,
       description: form.description || null,
-      start_date: form.start_date,
-      end_date: form.end_date || null,
+      start_date: form.start_date, end_date: form.end_date || null,
     });
   }
 
@@ -101,7 +98,7 @@ function EducationForm({ initial, onSubmit, onCancel, isPending }: {
           <Field label="Institution"><input className={inp} value={form.institution} onChange={(e) => setForm({ ...form, institution: e.target.value })} required /></Field>
           <Field label="Program / Degree"><input className={inp} value={form.program} onChange={(e) => setForm({ ...form, program: e.target.value })} required /></Field>
           <Field label="Description"><textarea className={`${inp} resize-none`} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></Field>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Start date"><input className={inp} value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} required placeholder="2020-09" /></Field>
             <Field label="End date"><input className={inp} value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} placeholder="2024-06" /></Field>
           </div>

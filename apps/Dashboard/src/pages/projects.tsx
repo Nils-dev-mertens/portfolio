@@ -14,7 +14,7 @@ export function ProjectsPage() {
   const [creating, setCreating] = useState(false);
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-1">Content</p>
@@ -22,37 +22,51 @@ export function ProjectsPage() {
         </div>
         <button
           onClick={() => setCreating(true)}
-          className="flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium hover:bg-primary/85 transition-opacity"
+          className="flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium hover:bg-primary/85 transition-opacity shrink-0"
         >
-          <Plus className="h-4 w-4" /> New Project
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline">New Project</span>
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
         {projects.map((project) => (
           <div
             key={project.id}
-            className="group flex items-start gap-4 rounded-xl border border-border bg-card px-5 py-4 hover:border-border/60 transition-colors"
+            className="group flex flex-col gap-3 rounded-xl border border-border bg-card px-5 py-4 hover:border-border/60 transition-colors"
           >
-            <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2 flex-wrap min-w-0">
+                <span className="font-medium text-sm truncate">{project.title}</span>
+                {project.featured && <Star className="h-3.5 w-3.5 fill-primary text-primary shrink-0" />}
+              </div>
+              <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => setEditing(project)} className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors">
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => deleteProject.mutate(project.id)} disabled={deleteProject.isPending} className="rounded-md p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground line-clamp-2 flex-1">{project.description}</p>
+
+            <div className="flex items-center justify-between gap-2 mt-auto">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium">{project.title}</span>
-                {project.featured && (
-                  <Star className="h-3.5 w-3.5 fill-primary text-primary shrink-0" />
-                )}
                 <span className="font-mono text-[11px] text-pink bg-pink/10 border border-pink/20 rounded px-1.5 py-0.5">
                   {project.category}
                 </span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{project.description}</p>
-              <div className="flex items-center gap-3 mt-2 flex-wrap">
-                {project.tags.map((tag) => (
-                  <span key={tag} className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                    {tag}
-                  </span>
+                {project.tags.slice(0, 2).map((tag) => (
+                  <span key={tag} className="text-[11px] text-muted-foreground uppercase tracking-widest">{tag}</span>
                 ))}
+                {project.tags.length > 2 && (
+                  <span className="text-[11px] text-muted-foreground">+{project.tags.length - 2}</span>
+                )}
+              </div>
+              <div className="flex gap-2 shrink-0">
                 {project.url && (
-                  <a href={project.url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors ml-auto">
+                  <a href={project.url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 )}
@@ -62,22 +76,6 @@ export function ProjectsPage() {
                   </a>
                 )}
               </div>
-            </div>
-
-            <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={() => setEditing(project)}
-                className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </button>
-              <button
-                onClick={() => deleteProject.mutate(project.id)}
-                disabled={deleteProject.isPending}
-                className="rounded-md p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
             </div>
           </div>
         ))}
