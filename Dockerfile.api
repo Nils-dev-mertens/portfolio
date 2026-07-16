@@ -6,7 +6,7 @@ COPY . .
 
 RUN bun install --frozen-lockfile
 
-RUN bunx turbo build --filter=api
+RUN bunx turbo build --filter=@portfolio/api
 
 FROM oven/bun:1-slim
 

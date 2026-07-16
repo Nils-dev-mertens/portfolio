@@ -6,7 +6,7 @@ COPY . .
 
 RUN bun install --frozen-lockfile
 
-RUN bunx turbo build --filter=web
+RUN bunx turbo build --filter=@portfolio/web
 
 FROM oven/bun:1-slim
 
