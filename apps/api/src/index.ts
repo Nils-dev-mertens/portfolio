@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { getDb,projects, seed } from "@portfolio/data";
 import { projectsRouter } from './routes/projects';
 import { aboutRouter } from './routes/about';
 import { workRouter } from './routes/work';
@@ -8,6 +9,25 @@ import { educationRouter } from './routes/education';
 import { githubRouter } from './routes/github';
 import { authRouter } from './routes/auth';
 import { requireAuth } from './middleware/auth';
+
+// Initialize database on startup (wrapped in IIFE to handle async)
+(async () => {
+  const db = getDb();
+  try {
+    const count = db.select().from(projects).all().length;
+    if (count === 0) {
+      seed();
+    }
+  } catch (e: any) {
+    if (e.message?.includes('no such table') || e.message?.includes('unable to open database')) {
+      console.log('🆕 Creating new database...');
+
+      seed();
+    } else {
+      console.error('❌ DB error:', e);
+    }
+  }
+})();
 
 const app = new Hono();
 
@@ -29,9 +49,11 @@ app.get('/health', (c) => c.json({ ok: true }));
 
 app.route('/api/auth', authRouter);
 
-// GET routes are public; mutations require a valid JWT
+// Only mutations require a JWT — GETs are public.
+// app.use (not app.on) ensures this runs before route handlers regardless of path specificity.
 app.use('/api/*', async (c, next) => {
-  if (c.req.method === 'GET' || c.req.method === 'OPTIONS') return next();
+  if (['GET', 'HEAD', 'OPTIONS'].includes(c.req.method)) return next();
+  if (c.req.path.startsWith('/api/auth/')) return next();
   return requireAuth(c, next);
 });
 

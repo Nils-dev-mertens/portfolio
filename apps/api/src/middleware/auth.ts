@@ -4,6 +4,7 @@ import { verify } from 'hono/jwt';
 export const requireAuth = createMiddleware(async (c, next) => {
   const authHeader = c.req.header('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
+    console.warn('[auth] 401 — missing or malformed Authorization header');
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
@@ -12,8 +13,9 @@ export const requireAuth = createMiddleware(async (c, next) => {
   if (!secret) return c.json({ error: 'Auth not configured' }, 500);
 
   try {
-    await verify(token, secret);
-  } catch {
+    await verify(token, secret, 'HS256');
+  } catch (err) {
+    console.warn('[auth] 401 — token verification failed:', (err as Error).message);
     return c.json({ error: 'Invalid or expired token' }, 401);
   }
 

@@ -20,7 +20,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (res.status === 401) {
     auth.clearToken();
-    window.location.href = '/login';
+    window.dispatchEvent(new CustomEvent('auth:expired'));
     throw new Error('Session expired');
   }
   if (!res.ok) {
@@ -149,9 +149,14 @@ export const githubApi = {
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 export const authApi = {
-  login: (password: string) =>
-    request<{ token: string }>('/api/auth/login', {
+  login: async (password: string): Promise<{ token: string }> => {
+    const res = await fetch(`${BASE}/api/auth/login`, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password }),
-    }),
+    });
+    const data = await res.json().catch(() => ({ error: res.statusText }));
+    if (!res.ok) throw new Error((data as { error: string }).error ?? 'Login failed');
+    return data as { token: string };
+  },
 };

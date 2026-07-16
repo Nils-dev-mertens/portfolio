@@ -5,3 +5,4 @@ export * from './src/queries/about';
 export * from './src/queries/education';
 export { getDb } from './src/db';
 export * from './src/db/schema';
+export * from './src/seed'

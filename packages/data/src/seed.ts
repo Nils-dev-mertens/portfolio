@@ -138,18 +138,21 @@ const aboutData: (typeof about.$inferInsert) = {
   ]),
 };
 
-const db = getDb();
+// Export seed function - only export, no direct execution
+export function seed() {
+  const db = getDb();
 
-db.delete(projects).run();
-db.insert(projects).values(data).run();
+  db.delete(projects).run();
+  db.insert(projects).values(data).run();
 
-db.delete(work_experience).run();
-db.insert(work_experience).values(workExperienceData).run();
+  db.delete(work_experience).run();
+  db.insert(work_experience).values(workExperienceData).run();
 
-db.delete(education).run();
-db.insert(education).values(educationData).run();
+  db.delete(education).run();
+  db.insert(education).values(educationData).run();
 
-db.delete(about).run();
-db.insert(about).values(aboutData).run();
+  db.delete(about).run();
+  db.insert(about).values(aboutData).run();
 
-console.log(`Seeded ${data.length} projects, ${workExperienceData.length} work experience entries, ${educationData.length} education entries, and about data into portfolio.db`);
+  console.log(`Seeded ${data.length} projects, ${workExperienceData.length} work experience entries, ${educationData.length} education entries, and about data into portfolio.db`);
+}

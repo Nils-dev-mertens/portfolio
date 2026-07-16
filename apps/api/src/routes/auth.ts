@@ -37,7 +37,8 @@ router.post('/login', async (c) => {
 
   const token = await sign(
     { sub: 'admin', exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
-    secret
+    secret,
+    'HS256'
   );
 
   return c.json({ token });

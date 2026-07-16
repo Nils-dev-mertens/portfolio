@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet, useRouterState, useRouter } from '@tanstack/react-router';
 import { LayoutDashboard, FolderKanban, Briefcase, GraduationCap, User, LogOut, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,12 @@ export function DashboardLayout() {
   const { location } = useRouterState();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleExpired = () => router.navigate({ to: '/login' });
+    window.addEventListener('auth:expired', handleExpired);
+    return () => window.removeEventListener('auth:expired', handleExpired);
+  }, [router]);
 
   function logout() {
     auth.clearToken();

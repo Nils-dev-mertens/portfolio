@@ -1,0 +1,26 @@
+# Dashboard Service Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY apps/Dashboard/package.json ./
+COPY apps/Dashboard/bun.lockb* ./
+
+# Install dependencies
+RUN npm install
+
+# Copy Dashboard source
+COPY apps/Dashboard/ ./
+
+# Build the Dashboard
+RUN npm run build
+
+# Environment variable for API URL
+ENV VITE_API_URL=http://api:3001
+
+# Expose port
+EXPOSE 80
+
+# Start the Dashboard
+CMD ["npm", "run", "preview"]

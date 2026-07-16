@@ -1,15 +1,47 @@
 services:
-  web:
-    build: .
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
     restart: unless-stopped
     environment:
-      - DB_PATH=/data/portfolio.db
+      - DB_PATH=/app/portfolio.db
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_PASSWORD=${AUTH_PASSWORD}
+      - DASHBOARD_URL=http://dashboard:80
+      - WEB_URL=http://web:4321
+    volumes:
+      - db-data:/app
+    expose:
+      - "3001"
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=http://api:3001
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    restart: unless-stopped
+    environment:
+      - DB_PATH=/app/portfolio.db
       - HOST=0.0.0.0
       - PORT=4321
     volumes:
-      - db-data:/data
+      - db-data:/app
     expose:
       - "4321"
+    depends_on:
+      - api
 
   nginx:
     image: nginx:alpine
@@ -21,6 +53,8 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - web
+      - api
+      - dashboard
 
 volumes:
   db-data:
