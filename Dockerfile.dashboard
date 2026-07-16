@@ -8,13 +8,10 @@ RUN bun install --frozen-lockfile
 
 RUN bunx turbo build --filter=@portfolio/dashboard
 
-FROM oven/bun:1-slim
+FROM nginx:alpine AS runner
 
-WORKDIR /app
+COPY --from=builder /repo/apps/Dashboard/dist /usr/share/nginx/html
 
-COPY --from=builder /repo/package.json .
-COPY --from=builder /repo/node_modules ./node_modules
-COPY --from=builder /repo/apps/dashboard ./apps/dashboard
-COPY --from=builder /repo/packages ./packages
+EXPOSE 80
 
-CMD ["bun","apps/dashboard/dist/index.js"]
+CMD ["nginx", "-g", "daemon off;"]
