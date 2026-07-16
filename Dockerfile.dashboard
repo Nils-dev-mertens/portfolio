@@ -6,6 +6,8 @@ COPY . .
 
 RUN bun install --frozen-lockfile
 
+ENV VITE_API_URL=/api
+
 RUN bunx turbo build --filter=@portfolio/dashboard
 
 FROM nginx:alpine AS runner
