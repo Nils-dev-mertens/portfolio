@@ -5,6 +5,8 @@ import ProjectCard from './ProjectCard.astro';
 
 const projects = getProjects({ featured: true, limit: 3 });
 
+console.log("project are" + projects)
+
 // Preview bento — distinct from the /projects page:
 // Row 1: [col-5 compact] [col-7 wide]   ← compact leads, featured lands on right
 // Row 2: [col-12 wide]                   ← full-width showcase closer
