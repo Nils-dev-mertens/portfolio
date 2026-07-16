@@ -1,1 +1,40 @@
+name: Deploy
 
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: latest
+
+      - name: Deploy
+        run: |
+          ssh ${{ secrets.TS_USER }}@${{ secrets.TS_HOST }} << 'EOF'
+            set -e
+
+            cd /home/${{ secrets.TS_USER }}/portfolio
+
+            git fetch origin
+            git reset --hard origin/main
+
+            docker compose build
+            docker compose up -d --remove-orphans
+
+            docker image prune -f
+          EOF

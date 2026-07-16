@@ -1,22 +1,23 @@
-# API Service Dockerfile
+FROM oven/bun:1 AS builder
+
+WORKDIR /repo
+
+COPY . .
+
+RUN bun install --frozen-lockfile
+
+RUN bunx turbo build --filter=api
+
 FROM oven/bun:1-slim
 
 WORKDIR /app
 
-# Copy only what's needed for API
-COPY package.json bun.lockb* ./
-COPY apps/api/ ./apps/api/
-COPY packages/data/ ./packages/data/
+COPY --from=builder /repo/package.json .
+COPY --from=builder /repo/node_modules ./node_modules
+COPY --from=builder /repo/apps/api ./apps/api
+COPY --from=builder /repo/packages ./packages
 
-# Install dependencies
-RUN bun install --production
-
-# Environment variables
-ENV DB_PATH=/app/portfolio.db
 ENV PORT=3001
 ENV HOST=0.0.0.0
 
-# Expose API port
-EXPOSE 3001
-
-CMD ["bun", "apps/api/dist/index.js"]
+CMD ["bun","apps/api/dist/index.js"]
