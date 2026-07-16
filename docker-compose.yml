@@ -8,8 +8,8 @@ services:
       - DB_PATH=/app/data/portfolio.db
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_PASSWORD=${AUTH_PASSWORD}
-      - DASHBOARD_URL=http://dashboard:80
-      - WEB_URL=http://web:4321
+      - DASHBOARD_URL=https://nilsmertens.dev/dashboard
+      - WEB_URL=https://nilsmertens.dev
     volumes:
       - db-data:/app/data
     expose:
