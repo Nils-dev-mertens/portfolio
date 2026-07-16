@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL ?? '';
+const BASE = '';
 
 const TOKEN_KEY = 'auth_token';
 export const auth = {
