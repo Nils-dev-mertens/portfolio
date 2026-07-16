@@ -8,6 +8,8 @@ RUN bun install --frozen-lockfile
 
 RUN bunx turbo build --filter=@portfolio/web
 
+RUN find apps/web -name "entry.mjs"
+
 FROM oven/bun:1-slim
 
 WORKDIR /app

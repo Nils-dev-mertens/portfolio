@@ -11,7 +11,7 @@ services:
       - DASHBOARD_URL=http://dashboard:80
       - WEB_URL=http://web:4321
     volumes:
-      - db-data:/app
+      - db-data:/app/data
     expose:
       - "3001"
 

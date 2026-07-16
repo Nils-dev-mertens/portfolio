@@ -8,6 +8,9 @@ RUN bun install --frozen-lockfile
 
 RUN bunx turbo build --filter=@portfolio/api
 
+RUN ls -la apps/api
+RUN find apps/api -name "*.js"
+
 FROM oven/bun:1-slim
 
 WORKDIR /app
