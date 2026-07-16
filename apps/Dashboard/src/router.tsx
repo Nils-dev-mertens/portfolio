@@ -127,6 +127,7 @@ export function createAppRouter(queryClient: QueryClient) {
 
   return createRouter({
     routeTree,
+    basepath: '/dashboard',
     defaultPreload: 'intent',
   });
 }
