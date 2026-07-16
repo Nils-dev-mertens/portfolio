@@ -6,7 +6,7 @@ COPY . .
 
 RUN bun install --frozen-lockfile
 
-RUN bunx turbo build --filter=dashboard
+RUN bunx turbo build --filter=@portfolio/dashboard
 
 FROM oven/bun:1-slim
 
