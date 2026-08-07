@@ -1,0 +1,323 @@
+---
+import { getGithubContributions, getAbout } from '@portfolio/data';
+
+const all = getGithubContributions(); // { date: 'YYYY-MM-DD', count }[]
+const about = getAbout();
+
+const MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+
+// ── helpers ──────────────────────────────────────────────────────────
+const pad = (n: number) => n.toString().padStart(2, '0');
+const fmt = (d: Date) => `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+
+interface Cell { date: string; count: number; level: number; active: boolean }
+interface Week { month: string; days: Cell[] }
+interface YearData { total: number; weeks: Week[] }
+
+function levelFor(count: number, max: number): number {
+  if (count <= 0) return 0;
+  const r = count / max;
+  if (r > 0.75) return 4;
+  if (r > 0.5) return 3;
+  if (r > 0.25) return 2;
+  return 1;
+}
+
+// Rolling 12-month window (GitHub-style): ~52 full weeks ending with the week
+// containing `end`, so the graph always ends on today — no empty future months.
+function buildWindow(end: Date, entries: { date: string; count: number }[]): YearData {
+  const endStr = fmt(end);
+
+  // first Sunday on/before (end − 364 days)
+  const rawStart = new Date(end);
+  rawStart.setUTCDate(rawStart.getUTCDate() - 364);
+  const first = new Date(rawStart);
+  first.setUTCDate(first.getUTCDate() - first.getUTCDay());
+  const startStr = fmt(first);
+
+  // last Saturday on/after end, so the final column is a complete week
+  const last = new Date(end);
+  last.setUTCDate(last.getUTCDate() + (6 - end.getUTCDay()));
+
+  const range = entries.filter((e) => e.date >= startStr && e.date <= endStr);
+  const map = new Map(range.map((e) => [e.date, e.count]));
+  const total = range.reduce((s, e) => s + e.count, 0);
+  const max = Math.max(1, range.reduce((m, e) => Math.max(m, e.count), 0));
+
+  const now = new Date();
+  const todayStr = fmt(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())));
+
+  const cells: Cell[] = [];
+  for (let d = new Date(first); d <= last; d.setUTCDate(d.getUTCDate() + 1)) {
+    const ds = fmt(d);
+    const future = ds > todayStr; // days after today stay invisible
+    const count = future ? 0 : (map.get(ds) ?? 0);
+    cells.push({ date: ds, count, level: future ? -1 : levelFor(count, max), active: !future });
+  }
+
+  const weeks: Week[] = [];
+  let prevMonth = '';
+  for (let i = 0; i < cells.length; i += 7) {
+    const days = cells.slice(i, i + 7);
+    const firstActive = days.find((c) => c.active);
+    const m = firstActive ? Number(firstActive.date.slice(5, 7)) - 1 : -1;
+    const label = m >= 0 && MONTHS[m] !== prevMonth ? MONTHS[m] : '';
+    if (m >= 0) prevMonth = MONTHS[m];
+    weeks.push({ month: label, days });
+  }
+
+  return { total, weeks };
+}
+
+// ── aggregate years (fall back to current year when the table is empty) ──
+const now = new Date();
+const currentYear = now.getUTCFullYear();
+const todayStr = fmt(new Date(Date.UTC(currentYear, now.getUTCMonth(), now.getUTCDate())));
+
+const dataYears = [...new Set(all.map((c) => Number(c.date.slice(0, 4))))].sort((a, b) => b - a);
+const allYears = dataYears.length ? dataYears : [currentYear];
+
+// each tab = the rolling year ending on the same month/day in that year
+const yearData: Record<string, YearData> = {};
+for (const y of allYears) {
+  yearData[y] = buildWindow(new Date(Date.UTC(y, now.getUTCMonth(), now.getUTCDate())), all);
+}
+
+const activeYear = Math.max(...allYears);
+const hasAnyData = all.length > 0;
+
+// serializable payload for the client-side year switcher
+const ghData = JSON.parse(JSON.stringify(yearData));
+
+const cellLabel = (c: Cell) =>
+  `${c.date} · ${c.count} ${c.count === 1 ? 'bijdrage' : 'bijdragen'}`;
+---
+
+<section class="py-16">
+  <div class="container">
+    <!-- Header -->
+    <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+      <div>
+        <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
+          GitHub
+        </span>
+        <h2 class="text-[30px] font-bold leading-tight text-primary">Code in cijfers</h2>
+      </div>
+      <div class="flex items-center gap-3">
+        {allYears.length > 1 && (
+          <div id="gh-years" class="flex gap-1.5">
+            {allYears.map((y) => (
+              <button
+                type="button"
+                data-year={y}
+                class:list={[
+                  'gh-year-tab px-3 py-1.5 rounded-md text-[11px] font-medium uppercase tracking-[0.06em] border transition-colors duration-150 cursor-pointer',
+                  y === activeYear
+                    ? 'text-primary bg-primary/10 border-primary/30'
+                    : 'text-foreground/55 border-border hover:text-foreground/90 hover:border-foreground/25',
+                ]}
+              >
+                {y}
+              </button>
+            ))}
+          </div>
+        )}
+        {about?.github_url && (
+          <a
+            href={about.github_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[11px] font-medium uppercase tracking-[0.08em] text-pink whitespace-nowrap transition-colors duration-150 hover:text-primary"
+          >
+            GitHub →
+          </a>
+        )}
+      </div>
+    </div>
+
+    {!hasAnyData && (
+      <p class="text-sm text-foreground/55 mb-6">
+        Nog geen bijdragen gesynchroniseerd — de cronjob vult dit automatisch aan.
+      </p>
+    )}
+
+    <!-- Full-width contribution grid -->
+    <div class="gh-scroll overflow-x-auto">
+      <div id="gh-grid">
+        {yearData[activeYear].weeks.map((week) => (
+          <div class="gh-week">
+            <span class:list={['gh-month', !week.month && 'invisible']}>{week.month || '—'}</span>
+            {week.days.map((cell) =>
+              cell.active ? (
+                <span
+                  class:list={['gh-cell', `gh-l${cell.level}`]}
+                  data-date={cell.date}
+                  data-count={cell.count}
+                  aria-label={cellLabel(cell)}
+                ></span>
+              ) : (
+                <span class="gh-cell gh-out" aria-hidden="true"></span>
+              )
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Total -->
+    <p id="gh-total" class="mt-5 text-[13px] text-foreground/60">
+      {yearData[activeYear].total} bijdragen in het afgelopen jaar
+    </p>
+  </div>
+</section>
+
+<style is:global>
+  /* Full-width GitHub-style contribution grid */
+  #gh-grid {
+    display: flex;
+    gap: 3px;
+    width: 100%;
+    min-width: 640px; /* keep readable cells on mobile; scrolls below that */
+  }
+  .gh-week {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .gh-month {
+    display: block;
+    height: 18px;
+    font-size: 10px;
+    line-height: 18px;
+    color: rgba(200, 192, 232, 0.5);
+    text-transform: lowercase;
+    white-space: nowrap;
+  }
+  .gh-cell {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: filter 120ms ease, box-shadow 120ms ease;
+  }
+  #gh-grid .gh-cell:hover {
+    filter: brightness(1.7);
+    box-shadow: 0 0 0 1px rgba(245, 208, 96, 0.5);
+    z-index: 2;
+    position: relative;
+  }
+  .gh-l0 { background: rgba(255, 255, 255, 0.05); }
+  .gh-l1 { background: rgba(216, 95, 163, 0.22); border-color: rgba(216, 95, 163, 0.3); }
+  .gh-l2 { background: rgba(216, 95, 163, 0.45); border-color: rgba(216, 95, 163, 0.55); }
+  .gh-l3 { background: rgba(245, 208, 96, 0.5); border-color: rgba(245, 208, 96, 0.6); }
+  .gh-l4 { background: rgba(245, 208, 96, 0.9); border-color: rgba(245, 208, 96, 1); box-shadow: 0 0 8px rgba(245, 208, 96, 0.35); }
+  .gh-out { background: transparent; border-color: transparent; }
+
+  /* tooltip */
+  #gh-tip {
+    position: fixed;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -130%) scale(0.95);
+    transition: opacity 100ms ease, transform 100ms ease;
+    background: #0f0d1a;
+    border: 1px solid rgba(245, 208, 96, 0.35);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: #f5d060;
+    white-space: nowrap;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  }
+  #gh-tip.show { opacity: 1; transform: translate(-50%, -130%) scale(1); }
+  #gh-tip.below { transform: translate(-50%, 18px) scale(1); }
+</style>
+
+<div id="gh-tip" role="tooltip"></div>
+
+<script is:inline define:vars={{ ghData }}>
+  const tip = document.getElementById('gh-tip');
+  const grid = document.getElementById('gh-grid');
+  const yearsEl = document.getElementById('gh-years');
+  const totalEl = document.getElementById('gh-total');
+
+  function nlDate(ds) {
+    const d = new Date(ds + 'T00:00:00Z');
+    return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function render(year) {
+    const data = ghData[year];
+    if (!data || !grid) return;
+
+    // weeks (styles live in the global gh-* classes, so re-rendered cells stay styled)
+    let html = '';
+    for (const week of data.weeks) {
+      html += '<div class="gh-week">';
+      html += week.month
+        ? `<span class="gh-month">${week.month}</span>`
+        : '<span class="gh-month invisible">—</span>';
+      for (const cell of week.days) {
+        if (cell.active) {
+          const label = `${cell.date} · ${cell.count} ${cell.count === 1 ? 'bijdrage' : 'bijdragen'}`;
+          html += `<span class="gh-cell gh-l${cell.level}" data-date="${cell.date}" data-count="${cell.count}" aria-label="${label}"></span>`;
+        } else {
+          html += '<span class="gh-cell gh-out" aria-hidden="true"></span>';
+        }
+      }
+      html += '</div>';
+    }
+    grid.innerHTML = html;
+
+    // total line
+    if (totalEl) totalEl.textContent = `${data.total} bijdragen in het afgelopen jaar`;
+
+    // tabs
+    if (yearsEl) {
+      yearsEl.querySelectorAll('.gh-year-tab').forEach((b) => {
+        const active = Number(b.dataset.year) === year;
+        b.classList.toggle('text-primary', active);
+        b.classList.toggle('bg-primary/10', active);
+        b.classList.toggle('border-primary/30', active);
+        b.classList.toggle('text-foreground/55', !active);
+        b.classList.toggle('border-border', !active);
+        b.classList.toggle('hover:text-foreground/90', !active);
+        b.classList.toggle('hover:border-foreground/25', !active);
+      });
+    }
+  }
+
+  yearsEl?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.gh-year-tab');
+    if (btn) render(Number(btn.dataset.year));
+  });
+
+  // tooltip (event delegation — survives re-renders; skipped for days with 0 contributions)
+  grid?.addEventListener('mouseover', (e) => {
+    const cell = e.target.closest('.gh-cell');
+    if (!cell || !tip) return;
+    const date = cell.dataset.date;
+    const count = Number(cell.dataset.count || 0);
+    if (!date || count === 0) return;
+    tip.textContent = `${nlDate(date)} · ${count} ${count === 1 ? 'bijdrage' : 'bijdragen'}`;
+    tip.classList.add('show');
+  });
+  grid?.addEventListener('mousemove', (e) => {
+    if (!tip) return;
+    const x = Math.min(e.clientX, window.innerWidth - 140);
+    const y = e.clientY;
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+    // flip below the cursor when near the top edge
+    tip.classList.toggle('below', y < 70);
+  });
+  grid?.addEventListener('mouseout', (e) => {
+    // only hide when actually leaving the grid, not when moving cell→cell
+    if (!grid.contains(e.relatedTarget) && tip) tip.classList.remove('show');
+  });
+</script>

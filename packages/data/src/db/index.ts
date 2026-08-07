@@ -22,6 +22,9 @@ export function getDb() {
       id TEXT PRIMARY KEY, type TEXT NOT NULL, repo TEXT NOT NULL,
       message TEXT, occurred_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS github_contributions (
+      date TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0
+    );
     CREATE TABLE IF NOT EXISTS work_experience (
       id TEXT PRIMARY KEY, company TEXT NOT NULL, role TEXT NOT NULL,
       description TEXT, start_date TEXT NOT NULL, end_date TEXT,

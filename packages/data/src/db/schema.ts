@@ -24,6 +24,11 @@ export const github_activity = sqliteTable('github_activity', {
   occurred_at: text('occurred_at').notNull(),
 });
 
+export const github_contributions = sqliteTable('github_contributions', {
+  date: text('date').primaryKey(),
+  count: integer('count').notNull().default(0),
+});
+
 export const work_experience = sqliteTable('work_experience', {
   id: text('id').primaryKey(),
   company: text('company').notNull(),

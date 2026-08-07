@@ -4,5 +4,6 @@ export * from './src/queries/github';
 export * from './src/queries/about';
 export * from './src/queries/education';
 export { getDb } from './src/db';
+export { startScheduler } from './src/scheduler';
 export * from './src/db/schema';
 export * from './src/seed'

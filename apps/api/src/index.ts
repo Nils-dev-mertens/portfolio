@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { getDb,projects, seed } from "@portfolio/data";
+import { getDb, projects, seed, startScheduler } from "@portfolio/data";
 import { projectsRouter } from './routes/projects';
 import { aboutRouter } from './routes/about';
 import { workRouter } from './routes/work';
@@ -28,6 +28,9 @@ import { requireAuth } from './middleware/auth';
     }
   }
 })();
+
+// Start background jobs (GitHub contributions sync, CMS sync, ...) — runs hourly.
+startScheduler();
 
 const app = new Hono();
 
