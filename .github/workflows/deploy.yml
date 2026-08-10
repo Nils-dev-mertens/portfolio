@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
 
 concurrency:
   group: production
@@ -15,7 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Connect to Tailscale
+      # Connect runner to Tailscale
+      - name: Tailscale
         uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -23,30 +24,22 @@ jobs:
           tags: tag:ci
           version: latest
 
-      - name: Load SSH key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # Password-based SSH (no key setup needed)
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
+      # Deploy to server
       - name: Deploy
         run: |
-          # -T: no TTY (stdin is a heredoc). StrictHostKeyChecking=no: the
-          # ephemeral runner has no known_hosts entry for the server.
-          ssh -T \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.TS_USER }}@${{ secrets.TS_HOST }} << 'EOF'
-            set -e
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.TS_USER }}@${{ secrets.TS_HOST }} "
+          cd /home/${{ secrets.TS_USER }}/fastportfolio
+          git fetch origin
+          git pull origin
+          git switch master
 
-            cd /home/${{ secrets.TS_USER }}/fastportfolio
+          docker compose down
+          docker compose build
+          docker compose up -d --remove-orphans
 
-            git fetch origin
-            git pull origin
-            git switch master
-
-            docker compose down
-            docker compose build
-            docker compose up -d --remove-orphans
-
-            docker image prune -f
-          EOF
+          docker image prune -f
+          "
