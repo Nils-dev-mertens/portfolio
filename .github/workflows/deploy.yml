@@ -28,11 +28,13 @@ jobs:
           ssh ${{ secrets.TS_USER }}@${{ secrets.TS_HOST }} << 'EOF'
             set -e
 
-            cd /home/${{ secrets.TS_USER }}/portfolio
+            cd /home/${{ secrets.TS_USER }}/fastportfolio
 
             git fetch origin
-            git reset --hard origin/master
+            git pull origin
+            git switch master
 
+            docker compose down
             docker compose build
             docker compose up -d --remove-orphans
 
