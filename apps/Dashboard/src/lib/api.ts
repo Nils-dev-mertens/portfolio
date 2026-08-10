@@ -78,14 +78,6 @@ export type About = {
   bio_about: string[];
 };
 
-export type GithubActivity = {
-  id: string;
-  type: string;
-  repo: string;
-  message: string | null;
-  occurred_at: string;
-};
-
 // ── Projects ─────────────────────────────────────────────────────────────────
 
 export const projectsApi = {
@@ -134,16 +126,6 @@ export const aboutApi = {
   get: () => request<About>('/api/about'),
   update: (id: string, body: Partial<Omit<About, 'id'>>) =>
     request<About>(`/api/about/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
-};
-
-// ── GitHub Activity ───────────────────────────────────────────────────────────
-
-export const githubApi = {
-  list: (limit?: number) => {
-    const q = limit ? `?limit=${limit}` : '';
-    return request<GithubActivity[]>(`/api/github${q}`);
-  },
-  delete: (id: string) => request<{ success: boolean }>(`/api/github/${id}`, { method: 'DELETE' }),
 };
 
 // ── Auth ──────────────────────────────────────────────────────────────────────

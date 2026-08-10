@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectsApi, workApi, educationApi, aboutApi, githubApi } from './api';
+import { projectsApi, workApi, educationApi, aboutApi } from './api';
 
 // ── Query keys ────────────────────────────────────────────────────────────────
 
@@ -22,10 +22,6 @@ export const keys = {
     all: ['about'] as const,
     detail: () => ['about', 'detail'] as const,
   },
-  github: {
-    all: ['github'] as const,
-    list: (limit?: number) => ['github', 'list', limit] as const,
-  },
 };
 
 // ── Query options ──────────────────────────────────────────────────────────────
@@ -47,9 +43,6 @@ export const educationQuery = () =>
 
 export const aboutQuery = () =>
   queryOptions({ queryKey: keys.about.detail(), queryFn: () => aboutApi.get() });
-
-export const githubQuery = (limit?: number) =>
-  queryOptions({ queryKey: keys.github.list(limit), queryFn: () => githubApi.list(limit) });
 
 // ── Mutations ─────────────────────────────────────────────────────────────────
 
@@ -134,13 +127,5 @@ export function useUpdateAbout() {
     mutationFn: ({ id, ...body }: Parameters<typeof aboutApi.update>[1] & { id: string }) =>
       aboutApi.update(id, body),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.about.all }),
-  });
-}
-
-export function useDeleteGithubActivity() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: githubApi.delete,
-    onSuccess: () => qc.invalidateQueries({ queryKey: keys.github.all }),
   });
 }

@@ -15,13 +15,7 @@ import { WorkPage } from './pages/work';
 import { EducationPage } from './pages/education';
 import { AboutPage } from './pages/about';
 import { auth } from './lib/api';
-import {
-  projectsQuery,
-  workQuery,
-  educationQuery,
-  aboutQuery,
-  githubQuery,
-} from './lib/queries';
+import { projectsQuery, workQuery, educationQuery, aboutQuery } from './lib/queries';
 
 function Pending() {
   return (
@@ -73,11 +67,7 @@ export function createAppRouter(queryClient: QueryClient) {
   const indexRoute = createRoute({
     getParentRoute: () => layoutRoute,
     path: '/',
-    loader: () =>
-      Promise.all([
-        queryClient.ensureQueryData(projectsQuery()),
-        queryClient.ensureQueryData(githubQuery(10)),
-      ]).catch(() => null),
+    loader: () => queryClient.ensureQueryData(projectsQuery()).catch(() => null),
     errorComponent: RouteError,
     component: wrap(OverviewPage),
   });

@@ -69,25 +69,8 @@ function buildWindow(end: Date, entries: { date: string; count: number }[]): Yea
   return { total, weeks };
 }
 
-// ── aggregate years (fall back to current year when the table is empty) ──
-const now = new Date();
-const currentYear = now.getUTCFullYear();
-const todayStr = fmt(new Date(Date.UTC(currentYear, now.getUTCMonth(), now.getUTCDate())));
-
-const dataYears = [...new Set(all.map((c) => Number(c.date.slice(0, 4))))].sort((a, b) => b - a);
-const allYears = dataYears.length ? dataYears : [currentYear];
-
-// each tab = the rolling year ending on the same month/day in that year
-const yearData: Record<string, YearData> = {};
-for (const y of allYears) {
-  yearData[y] = buildWindow(new Date(Date.UTC(y, now.getUTCMonth(), now.getUTCDate())), all);
-}
-
-const activeYear = Math.max(...allYears);
+const data = buildWindow(new Date(), all);
 const hasAnyData = all.length > 0;
-
-// serializable payload for the client-side year switcher
-const ghData = JSON.parse(JSON.stringify(yearData));
 
 const cellLabel = (c: Cell) =>
   `${c.date} · ${c.count} ${c.count === 1 ? 'bijdrage' : 'bijdragen'}`;
@@ -103,36 +86,16 @@ const cellLabel = (c: Cell) =>
         </span>
         <h2 class="text-[30px] font-bold leading-tight text-primary">Code in cijfers</h2>
       </div>
-      <div class="flex items-center gap-3">
-        {allYears.length > 1 && (
-          <div id="gh-years" class="flex gap-1.5">
-            {allYears.map((y) => (
-              <button
-                type="button"
-                data-year={y}
-                class:list={[
-                  'gh-year-tab px-3 py-1.5 rounded-md text-[11px] font-medium uppercase tracking-[0.06em] border transition-colors duration-150 cursor-pointer',
-                  y === activeYear
-                    ? 'text-primary bg-primary/10 border-primary/30'
-                    : 'text-foreground/55 border-border hover:text-foreground/90 hover:border-foreground/25',
-                ]}
-              >
-                {y}
-              </button>
-            ))}
-          </div>
-        )}
-        {about?.github_url && (
-          <a
-            href={about.github_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-[11px] font-medium uppercase tracking-[0.08em] text-pink whitespace-nowrap transition-colors duration-150 hover:text-primary"
-          >
-            GitHub →
-          </a>
-        )}
-      </div>
+      {about?.github_url && (
+        <a
+          href={about.github_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[11px] font-medium uppercase tracking-[0.08em] text-pink whitespace-nowrap transition-colors duration-150 hover:text-primary"
+        >
+          GitHub →
+        </a>
+      )}
     </div>
 
     {!hasAnyData && (
@@ -144,7 +107,7 @@ const cellLabel = (c: Cell) =>
     <!-- Full-width contribution grid -->
     <div class="gh-scroll overflow-x-auto">
       <div id="gh-grid">
-        {yearData[activeYear].weeks.map((week) => (
+        {data.weeks.map((week) => (
           <div class="gh-week">
             <span class:list={['gh-month', !week.month && 'invisible']}>{week.month || '—'}</span>
             {week.days.map((cell) =>
@@ -166,7 +129,7 @@ const cellLabel = (c: Cell) =>
 
     <!-- Total -->
     <p id="gh-total" class="mt-5 text-[13px] text-foreground/60">
-      {yearData[activeYear].total} bijdragen in het afgelopen jaar
+      {data.total} bijdragen in het afgelopen jaar
     </p>
   </div>
 </section>
@@ -240,64 +203,16 @@ const cellLabel = (c: Cell) =>
 
 <div id="gh-tip" role="tooltip"></div>
 
-<script is:inline define:vars={{ ghData }}>
+<script is:inline>
   const tip = document.getElementById('gh-tip');
   const grid = document.getElementById('gh-grid');
-  const yearsEl = document.getElementById('gh-years');
-  const totalEl = document.getElementById('gh-total');
 
   function nlDate(ds) {
     const d = new Date(ds + 'T00:00:00Z');
     return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-  function render(year) {
-    const data = ghData[year];
-    if (!data || !grid) return;
-
-    // weeks (styles live in the global gh-* classes, so re-rendered cells stay styled)
-    let html = '';
-    for (const week of data.weeks) {
-      html += '<div class="gh-week">';
-      html += week.month
-        ? `<span class="gh-month">${week.month}</span>`
-        : '<span class="gh-month invisible">—</span>';
-      for (const cell of week.days) {
-        if (cell.active) {
-          const label = `${cell.date} · ${cell.count} ${cell.count === 1 ? 'bijdrage' : 'bijdragen'}`;
-          html += `<span class="gh-cell gh-l${cell.level}" data-date="${cell.date}" data-count="${cell.count}" aria-label="${label}"></span>`;
-        } else {
-          html += '<span class="gh-cell gh-out" aria-hidden="true"></span>';
-        }
-      }
-      html += '</div>';
-    }
-    grid.innerHTML = html;
-
-    // total line
-    if (totalEl) totalEl.textContent = `${data.total} bijdragen in het afgelopen jaar`;
-
-    // tabs
-    if (yearsEl) {
-      yearsEl.querySelectorAll('.gh-year-tab').forEach((b) => {
-        const active = Number(b.dataset.year) === year;
-        b.classList.toggle('text-primary', active);
-        b.classList.toggle('bg-primary/10', active);
-        b.classList.toggle('border-primary/30', active);
-        b.classList.toggle('text-foreground/55', !active);
-        b.classList.toggle('border-border', !active);
-        b.classList.toggle('hover:text-foreground/90', !active);
-        b.classList.toggle('hover:border-foreground/25', !active);
-      });
-    }
-  }
-
-  yearsEl?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.gh-year-tab');
-    if (btn) render(Number(btn.dataset.year));
-  });
-
-  // tooltip (event delegation — survives re-renders; skipped for days with 0 contributions)
+  // tooltip (event delegation — skipped for days with 0 contributions)
   grid?.addEventListener('mouseover', (e) => {
     const cell = e.target.closest('.gh-cell');
     if (!cell || !tip) return;
