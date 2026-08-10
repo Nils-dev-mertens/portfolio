@@ -33,5 +33,11 @@ jobs:
       - name: Typecheck
         run: bunx turbo run typecheck
 
+      - name: Test
+        run: bun run test
+
+      - name: Typecheck tests
+        run: bunx tsc --noEmit -p tests
+
       - name: Build
         run: bunx turbo run build
