@@ -28,38 +28,40 @@ export function DashboardLayout() {
     router.navigate({ to: '/login' });
   }
 
-  const NavLinks = () => (
-    <>
-      <nav className="flex flex-col gap-0.5 flex-1">
-        {nav.map(({ to, label, icon: Icon, exact }) => {
-          const active = exact ? location.pathname === to : location.pathname.startsWith(to);
-          return (
-            <Link
-              key={to}
-              to={to}
-              onClick={() => setSidebarOpen(false)}
-              className={cn(
-                'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150',
-                active
-                  ? 'bg-primary/10 text-primary font-medium border border-primary/20'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-              )}
-            >
-              <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-primary' : '')} />
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
-      <button
-        onClick={logout}
-        className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors duration-150 border-t border-border pt-4 mt-2"
-      >
-        <LogOut className="h-4 w-4 shrink-0" />
-        Sign out
-      </button>
-    </>
-  );
+  function renderNavLinks() {
+    return (
+      <>
+        <nav className="flex flex-col gap-0.5 flex-1">
+          {nav.map(({ to, label, icon: Icon, exact }) => {
+            const active = exact ? location.pathname === to : location.pathname.startsWith(to);
+            return (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setSidebarOpen(false)}
+                className={cn(
+                  'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-150',
+                  active
+                    ? 'bg-primary/10 text-primary font-medium border border-primary/20'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                )}
+              >
+                <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-primary' : '')} />
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+        <button
+          onClick={logout}
+          className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors duration-150 border-t border-border pt-4 mt-2"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          Sign out
+        </button>
+      </>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -69,7 +71,7 @@ export function DashboardLayout() {
           <p className="text-xs font-semibold text-primary uppercase tracking-widest">Portfolio</p>
           <p className="text-[11px] text-muted-foreground mt-0.5">Admin Dashboard</p>
         </div>
-        <NavLinks />
+        {renderNavLinks()}
       </aside>
 
       {/* Mobile overlay */}
@@ -96,7 +98,7 @@ export function DashboardLayout() {
             <X className="h-4 w-4" />
           </button>
         </div>
-        <NavLinks />
+        {renderNavLinks()}
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">

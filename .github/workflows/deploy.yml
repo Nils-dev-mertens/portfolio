@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 concurrency:
   group: production
@@ -31,7 +31,7 @@ jobs:
             cd /home/${{ secrets.TS_USER }}/portfolio
 
             git fetch origin
-            git reset --hard origin/main
+            git reset --hard origin/master
 
             docker compose build
             docker compose up -d --remove-orphans
