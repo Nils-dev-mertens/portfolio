@@ -25,7 +25,12 @@ jobs:
 
       - name: Deploy
         run: |
-          ssh ${{ secrets.TS_USER }}@${{ secrets.TS_HOST }} << 'EOF'
+          # -T: no TTY (stdin is a heredoc). StrictHostKeyChecking=no: the
+          # ephemeral runner has no known_hosts entry for the server.
+          ssh -T \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.TS_USER }}@${{ secrets.TS_HOST }} << 'EOF'
             set -e
 
             cd /home/${{ secrets.TS_USER }}/fastportfolio
