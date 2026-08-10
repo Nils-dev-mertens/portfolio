@@ -23,6 +23,11 @@ jobs:
           tags: tag:ci
           version: latest
 
+      - name: Load SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Deploy
         run: |
           # -T: no TTY (stdin is a heredoc). StrictHostKeyChecking=no: the
