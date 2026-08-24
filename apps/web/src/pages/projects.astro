@@ -1,10 +1,12 @@
 ---
-import { getProjects } from '@portfolio/data';
+import { getProjects, t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 
-const projects = getProjects();
+const lang = getLang(Astro.currentLocale) as Lang;
+const projects = getProjects({}, lang);
 
 // 10-card bento cycle — 4 distinct row shapes before repeating:
 // Row A [7][5]  →  Row B [3][4][5]  →  Row C [5][7]  →  Row D [4][4][4]
@@ -27,18 +29,17 @@ function getBento(i: number) {
 ---
 
 <BaseLayout
-  title="Projecten — Nils Mertens"
-  description="Alle open source projecten van Nils Mertens: web apps, CLI tools, DevOps setups en automatiseringsscripts."
+  title={lang === 'en' ? 'Projects — Nils Mertens' : 'Projecten — Nils Mertens'}
+  description={lang === 'en'
+    ? 'All open source projects by Nils Mertens: web apps, CLI tools, DevOps setups and automation scripts.'
+    : 'Alle open source projecten van Nils Mertens: web apps, CLI tools, DevOps setups en automatiseringsscripts.'}
 >
   <section class="pt-16 pb-24">
     <div class="container">
       <div class="page-fade">
-        <SectionHeader label="Portfolio" title="Alle projecten" as="h1" />
+        <SectionHeader label={t(lang, 'projects.page.label')} title={t(lang, 'projects.page.title')} as="h1" />
         <p class="mt-4 max-w-2xl text-muted-foreground text-base leading-relaxed">
-          Ik kwak projecten omdat ik geloof dat je het meeste leert door gewoon te bouwen.
-          Soms is het een probleem dat ik zelf tegenkom, soms pure nieuwsgierigheid naar een technologie,
-          en soms wil ik iets bijdragen aan de open source community. Elk project is een kans om iets
-          nieuws te ontdekken, te experimenteren en beter te worden in mijn vak.
+          {t(lang, 'projects.page.intro')}
         </p>
       </div>
       <div class="grid grid-cols-12 gap-4 items-stretch mt-10">
@@ -49,7 +50,7 @@ function getBento(i: number) {
               class={`col-span-12 md:${col} card-reveal h-full`}
               style={`--delay: ${Math.min(i * 80, 480)}ms`}
             >
-              <ProjectCard project={project} isLatest={i === 0} />
+              <ProjectCard project={project} isLatest={i === 0} lang={lang} />
             </div>
           );
         })}

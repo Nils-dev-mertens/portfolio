@@ -1,12 +1,20 @@
 ---
-import { getWorkExperience } from '../../../../packages/data';
+import { getWorkExperience, t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
 
-const jobs = getWorkExperience();
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = getLang(Astro.currentLocale) } = Astro.props;
+const jobs = getWorkExperience(lang);
+
+const dateLocale = lang === 'en' ? 'en-GB' : 'nl-NL';
 
 function formatPeriod(start: string, end: string | null, current: boolean) {
   const fmt = (d: string) =>
-    new Date(d).toLocaleDateString('nl-NL', { month: 'short', year: 'numeric' });
-  const endLabel = current ? 'heden' : end ? fmt(end) : '';
+    new Date(d).toLocaleDateString(dateLocale, { month: 'short', year: 'numeric' });
+  const endLabel = current ? t(lang, 'work.current') : end ? fmt(end) : '';
   return `${fmt(start)} – ${endLabel}`;
 }
 ---
@@ -15,9 +23,9 @@ function formatPeriod(start: string, end: string | null, current: boolean) {
   <div class="container">
     <div class="mb-8">
       <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
-        Werkervaring
+        {t(lang, 'work.label')}
       </span>
-      <h2 class="text-[30px] font-bold leading-tight text-primary">Waar ik gewerkt heb</h2>
+      <h2 class="text-[30px] font-bold leading-tight text-primary">{t(lang, 'work.title')}</h2>
     </div>
 
     <div class="flex flex-col">
@@ -42,7 +50,7 @@ function formatPeriod(start: string, end: string | null, current: boolean) {
                 <span class="text-foreground/40 text-xs">·</span>
                 <span class="text-xs text-foreground/70 italic">{job.role}</span>
                 {job.current && (
-                  <span class="tag bg-pink/10 text-pink border-pink/20 text-[10px] py-0 leading-5">Huidig</span>
+                  <span class="tag bg-pink/10 text-pink border-pink/20 text-[10px] py-0 leading-5">{t(lang, 'work.current')}</span>
                 )}
               </div>
               <span class="text-[11px] text-foreground/55 shrink-0 tabular-nums">

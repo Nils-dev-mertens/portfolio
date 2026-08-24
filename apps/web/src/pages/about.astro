@@ -4,24 +4,34 @@ import SectionHeader from '../components/SectionHeader.astro';
 import SkillsGrid from '../components/SkillsGrid.astro';
 import WorkExperience from '../components/WorkExperience.astro';
 import ContactStrip from '../components/ContactStrip.astro';
-import { getAbout, getEducation } from '@portfolio/data';
+import { getAbout, getEducation, t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
 
-const about = getAbout();
-const education = getEducation();
+const lang = getLang(Astro.currentLocale) as Lang;
+const about = getAbout(lang);
+const education = getEducation(lang);
 
 const githubLabel = about?.github_url.replace('https://github.com/', '') ?? '';
+
+const meta = [
+  { label: t(lang, 'about.meta.location'), value: about?.location ?? '', href: null },
+  { label: t(lang, 'about.meta.email'), value: about?.email ?? '', href: `mailto:${about?.email}` },
+  { label: t(lang, 'about.meta.github'), value: githubLabel, href: about?.github_url ?? null },
+];
 ---
 
 <BaseLayout
-  title="Over mij — Nils Mertens"
-  description="Junior Fullstack Developer uit Antwerpen. Meer over Nils Mertens: achtergrond, opleiding en werkervaring."
+  title={lang === 'en' ? 'About — Nils Mertens' : 'Over mij — Nils Mertens'}
+  description={lang === 'en'
+    ? 'Junior Fullstack Developer from Antwerp. More about Nils Mertens: background, education and work experience.'
+    : 'Junior Fullstack Developer uit Antwerpen. Meer over Nils Mertens: achtergrond, opleiding en werkervaring.'}
 >
   <div class="pt-16">
     <div class="container">
 
       <!-- Bio — quote as hero -->
       <section class="border-b border-border">
-        <h1 class="sr-only">Over mij — Nils Mertens</h1>
+        <h1 class="sr-only">{lang === 'en' ? 'About — Nils Mertens' : 'Over mij — Nils Mertens'}</h1>
 
         <!-- Hero quote — full width, centered, lots of breathing room -->
         <div class="flex flex-col items-center text-center py-16 md:py-24">
@@ -48,11 +58,7 @@ const githubLabel = about?.github_url.replace('https://github.com/', '') ?? '';
 
           <!-- Right: keyline metadata -->
           <dl class="flex flex-col">
-            {[
-              { label: 'Locatie', value: about?.location ?? '',        href: null },
-              { label: 'E-mail',  value: about?.email ?? '',           href: `mailto:${about?.email}` },
-              { label: 'GitHub',  value: githubLabel,                  href: about?.github_url ?? null },
-            ].map((row) => (
+            {meta.map((row) => (
               <div class="flex items-center justify-between py-3 border-b border-border">
                 <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">{row.label}</dt>
                 <dd>
@@ -64,7 +70,7 @@ const githubLabel = about?.github_url.replace('https://github.com/', '') ?? '';
               </div>
             ))}
             <div class="flex items-center justify-between py-3">
-              <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">Status</dt>
+              <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">{t(lang, 'about.meta.status')}</dt>
               <dd>
                 {about?.status_active && (
                   <span class="inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 border border-primary/30">
@@ -80,20 +86,20 @@ const githubLabel = about?.github_url.replace('https://github.com/', '') ?? '';
 
       <!-- Skills -->
       <section class="py-16 border-b border-border">
-        <SectionHeader label="Vaardigheden" title="Technische stack" />
-        <SkillsGrid />
+        <SectionHeader label={t(lang, 'about.skills.label')} title={t(lang, 'about.skills.title')} />
+        <SkillsGrid lang={lang} />
       </section>
 
     </div>
   </div>
 
   <!-- Work experience — has its own container -->
-  <WorkExperience server:defer />
+  <WorkExperience server:defer lang={lang} />
 
   <!-- Education -->
   <div class="container">
     <section class="py-16">
-      <SectionHeader label="Opleiding" title="Achtergrond" />
+      <SectionHeader label={t(lang, 'about.education.label')} title={t(lang, 'about.education.title')} />
       <div class="flex flex-col">
         {education.map((edu, i) => (
           <div class={`edu-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md ${i !== 0 ? 'border-t border-border' : ''}`}>

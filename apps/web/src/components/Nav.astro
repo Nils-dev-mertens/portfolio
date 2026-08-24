@@ -1,19 +1,30 @@
 ---
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/projects', label: 'Projecten' },
-  { href: '/about', label: 'Over mij' },
-];
+import { t, type Lang } from '@portfolio/data';
+import { getLang, swapLocale } from '../lib/i18n';
 
+const lang = getLang(Astro.currentLocale) as Lang;
 const current = Astro.url.pathname;
+
+const links = [
+  { href: '/', key: 'nav.home' },
+  { href: '/projects', key: 'nav.projects' },
+  { href: '/about', key: 'nav.about' },
+].map((l) => ({
+  href: lang === 'en' ? `/en${l.href === '/' ? '' : l.href}` : l.href,
+  label: t(lang, l.key),
+}));
+
+const otherLang: Lang = lang === 'en' ? 'nl' : 'en';
+const switchHref = swapLocale(current, otherLang);
+const switchLabel = otherLang === 'en' ? 'EN' : 'NL';
 ---
 
 <header class="sticky top-0 z-50 bg-background border-b border-border">
   <div class="container flex items-center justify-between h-16">
-    <a href="/" class="text-xl font-bold text-primary">
+    <a href={links[0].href} class="text-xl font-bold text-primary">
       NM<span class="text-pink">.</span>
     </a>
-    <nav>
+    <nav class="flex items-center gap-6">
       <ul class="flex gap-8 list-none">
         {links.map((link) => (
           <li>
@@ -31,6 +42,15 @@ const current = Astro.url.pathname;
           </li>
         ))}
       </ul>
+      <a
+        href={switchHref}
+        rel="alternate"
+        hreflang={otherLang}
+        class="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground/60 border border-border rounded px-2 py-1 transition-colors duration-150 hover:text-primary hover:border-primary/40"
+        aria-label={otherLang === 'en' ? 'Switch to English' : 'Schakel naar Nederlands'}
+      >
+        {switchLabel}
+      </a>
     </nav>
   </div>
 </header>

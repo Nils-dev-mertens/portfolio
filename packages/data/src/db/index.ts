@@ -12,7 +12,8 @@ export function getDb() {
   sqlite.exec('PRAGMA journal_mode = WAL;');
   sqlite.exec(`
     CREATE TABLE IF NOT EXISTS projects (
-      id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL,
+      id TEXT PRIMARY KEY, title TEXT NOT NULL, title_en TEXT NOT NULL DEFAULT '',
+      description TEXT NOT NULL, description_en TEXT NOT NULL DEFAULT '',
       category TEXT NOT NULL DEFAULT 'other',
       tags TEXT NOT NULL DEFAULT '[]', url TEXT, repo_url TEXT,
       featured INTEGER NOT NULL DEFAULT 0,
@@ -26,24 +27,51 @@ export function getDb() {
       date TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS work_experience (
-      id TEXT PRIMARY KEY, company TEXT NOT NULL, role TEXT NOT NULL,
-      description TEXT, start_date TEXT NOT NULL, end_date TEXT,
+      id TEXT PRIMARY KEY, company TEXT NOT NULL, role TEXT NOT NULL, role_en TEXT NOT NULL DEFAULT '',
+      description TEXT, description_en TEXT,
+      start_date TEXT NOT NULL, end_date TEXT,
       current INTEGER NOT NULL DEFAULT 0,
       tags TEXT NOT NULL DEFAULT '[]'
     );
     CREATE TABLE IF NOT EXISTS education (
-      id TEXT PRIMARY KEY, institution TEXT NOT NULL, program TEXT NOT NULL,
-      description TEXT, start_date TEXT NOT NULL, end_date TEXT
+      id TEXT PRIMARY KEY, institution TEXT NOT NULL, program TEXT NOT NULL, program_en TEXT NOT NULL DEFAULT '',
+      description TEXT, description_en TEXT,
+      start_date TEXT NOT NULL, end_date TEXT
     );
     CREATE TABLE IF NOT EXISTS about (
       id TEXT PRIMARY KEY, location TEXT NOT NULL, email TEXT NOT NULL,
-      github_url TEXT NOT NULL, status_label TEXT NOT NULL,
+      github_url TEXT NOT NULL, status_label TEXT NOT NULL, status_label_en TEXT NOT NULL DEFAULT '',
       status_active INTEGER NOT NULL DEFAULT 1,
-      tagline TEXT NOT NULL, quote TEXT NOT NULL, quote_sub TEXT NOT NULL,
+      tagline TEXT NOT NULL, tagline_en TEXT NOT NULL DEFAULT '',
+      quote TEXT NOT NULL, quote_en TEXT NOT NULL DEFAULT '',
+      quote_sub TEXT NOT NULL, quote_sub_en TEXT NOT NULL DEFAULT '',
       bio_landing TEXT NOT NULL DEFAULT '[]',
-      bio_about TEXT NOT NULL DEFAULT '[]'
+      bio_landing_en TEXT NOT NULL DEFAULT '[]',
+      bio_about TEXT NOT NULL DEFAULT '[]',
+      bio_about_en TEXT NOT NULL DEFAULT '[]'
     );
   `);
+
+  // Add translation columns for already-created databases (idempotent).
+  const addColumn = (table: string, column: string, definition: string) => {
+    const cols = sqlite.query(`PRAGMA table_info(${table})`).all() as { name: string }[];
+    if (!cols.some((c) => c.name === column)) {
+      sqlite.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+    }
+  };
+  addColumn('projects', 'title_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('projects', 'description_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('work_experience', 'role_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('work_experience', 'description_en', 'TEXT');
+  addColumn('education', 'program_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('education', 'description_en', 'TEXT');
+  addColumn('about', 'status_label_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('about', 'tagline_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('about', 'quote_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('about', 'quote_sub_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('about', 'bio_landing_en', "TEXT NOT NULL DEFAULT '[]'");
+  addColumn('about', 'bio_about_en', "TEXT NOT NULL DEFAULT '[]'");
+
   _db = drizzle(sqlite, { schema });
   return _db;
 }

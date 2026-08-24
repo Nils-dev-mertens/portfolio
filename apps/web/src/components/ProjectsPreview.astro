@@ -1,11 +1,15 @@
 ---
-import { getProjects } from '@portfolio/data';
+import { getProjects, t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
 import SectionHeader from './SectionHeader.astro';
 import ProjectCard from './ProjectCard.astro';
 
-const projects = getProjects({ featured: true, limit: 3 });
+interface Props {
+  lang?: Lang;
+}
 
-console.log("project are" + projects)
+const { lang = getLang(Astro.currentLocale) } = Astro.props;
+const projects = getProjects({ featured: true, limit: 3 }, lang);
 
 // Preview bento — distinct from the /projects page:
 // Row 1: [col-5 compact] [col-7 wide]   ← compact leads, featured lands on right
@@ -20,17 +24,17 @@ const spans: Array<{ col: string; wide: boolean }> = [
 <section class="py-16">
   <div class="container">
     <SectionHeader
-      label="Projecten"
-      title="Wat ik bouw"
-      ctaHref="/projects"
-      ctaLabel="Alle projecten"
+      label={t(lang, 'section.projects.label')}
+      title={t(lang, 'section.projects.title')}
+      ctaHref={lang === 'en' ? '/en/projects' : '/projects'}
+      ctaLabel={t(lang, 'cta.allProjects')}
     />
     <div class="grid grid-cols-12 gap-4 items-stretch">
       {projects.map((project, i) => {
         const { col, wide } = spans[i] ?? { col: 'md:col-span-4', wide: false };
         return (
           <div class={`col-span-12 ${col} h-full`}>
-            <ProjectCard project={project} wide={wide} />
+            <ProjectCard project={project} wide={wide} lang={lang} />
           </div>
         );
       })}
