@@ -34,6 +34,7 @@ jobs:
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.TS_USER }}@${{ secrets.TS_HOST }} "
           cd /home/${{ secrets.TS_USER }}/portfolio_claudecode
 
+          git checkout master
           git pull
 
           docker compose build
