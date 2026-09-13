@@ -1,13 +1,12 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import SkillsGrid from '../components/SkillsGrid.astro';
-import WorkExperience from '../components/WorkExperience.astro';
-import ContactStrip from '../components/ContactStrip.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import SkillsGrid from '../../components/SkillsGrid.astro';
+import WorkExperience from '../../components/WorkExperience.astro';
+import ContactStrip from '../../components/ContactStrip.astro';
 import { getAbout, getEducation, t, type Lang } from '@portfolio/data';
-import { getLang } from '../lib/i18n';
 
-const lang = getLang(Astro.currentLocale) as Lang;
+const lang = 'en' as Lang;
 const about = getAbout(lang);
 const education = getEducation(lang);
 
@@ -21,19 +20,15 @@ const meta = [
 ---
 
 <BaseLayout
-  title={lang === 'en' ? 'About — Nils Mertens' : 'Over mij — Nils Mertens'}
-  description={lang === 'en'
-    ? 'Junior Fullstack Developer from Antwerp. More about Nils Mertens: background, education and work experience.'
-    : 'Junior Fullstack Developer uit Antwerpen. Meer over Nils Mertens: achtergrond, opleiding en werkervaring.'}
+  title="About — Nils Mertens"
+  description="Junior Fullstack Developer from Antwerp. More about Nils Mertens: background, education and work experience."
 >
   <div class="pt-16">
     <div class="container">
 
-      <!-- Bio — quote as hero -->
       <section class="border-b border-border">
-        <h1 class="sr-only">{lang === 'en' ? 'About — Nils Mertens' : 'Over mij — Nils Mertens'}</h1>
+        <h1 class="sr-only">About — Nils Mertens</h1>
 
-        <!-- Hero quote — full width, centered, lots of breathing room -->
         <div class="flex flex-col items-center text-center py-16 md:py-24">
           <p class="text-[clamp(2.5rem,7vw,5rem)] font-bold leading-[1.05] text-primary max-w-4xl">
             {about?.quote}
@@ -43,20 +38,16 @@ const meta = [
           </p>
         </div>
 
-        <!-- Divider -->
         <div class="border-t border-border" />
 
-        <!-- Body + metadata -->
         <div class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-12 items-start py-16">
 
-          <!-- Left: body text -->
           <div class="flex flex-col gap-4">
             {about?.bio_about.map((paragraph) => (
               <p class="text-foreground leading-[1.7]">{paragraph}</p>
             ))}
           </div>
 
-          <!-- Right: keyline metadata -->
           <dl class="flex flex-col">
             {meta.map((row) => (
               <div class="flex items-center justify-between py-3 border-b border-border">
@@ -84,7 +75,6 @@ const meta = [
         </div>
       </section>
 
-      <!-- Skills -->
       <section class="py-16 border-b border-border">
         <SectionHeader label={t(lang, 'about.skills.label')} title={t(lang, 'about.skills.title')} />
         <SkillsGrid lang={lang} />
@@ -93,10 +83,8 @@ const meta = [
     </div>
   </div>
 
-  <!-- Work experience — has its own container -->
   <WorkExperience server:defer lang={lang} />
 
-  <!-- Education -->
   <div class="container">
     <section class="py-16">
       <SectionHeader label={t(lang, 'about.education.label')} title={t(lang, 'about.education.title')} />
@@ -131,14 +119,8 @@ const meta = [
   <ContactStrip />
 
 <style>
-  .edu-row {
-    transition: background-color 250ms ease;
-  }
-  .edu-row:hover {
-    background-color: rgba(255, 255, 255, 0.018);
-  }
-  .edu-row:hover .accent-bar {
-    opacity: 1;
-  }
+  .edu-row { transition: background-color 250ms ease; }
+  .edu-row:hover { background-color: rgba(255, 255, 255, 0.018); }
+  .edu-row:hover .accent-bar { opacity: 1; }
 </style>
 </BaseLayout>

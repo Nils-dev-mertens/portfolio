@@ -1,9 +1,15 @@
 ---
 import nilsPhoto from '../public/images/1732207667226.jpg';
 import { buttonVariants } from "./ui/button";
-import { getAbout } from '@portfolio/data';
+import { getAbout, t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
 
-const about = getAbout();
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = getLang(Astro.currentLocale) } = Astro.props;
+const about = getAbout(lang);
 ---
 
 <section class="flex items-center min-h-[calc(80svh-60px)]">
@@ -11,7 +17,7 @@ const about = getAbout();
 
     <!-- Left: Flip Photo Card -->
     <div class="flex justify-center">
-      <a href="/about" class="flip-card" aria-label="Meer over Nils">
+      <a href={lang === 'en' ? '/en/about' : '/about'} class="flip-card" aria-label={t(lang, 'hero.flip.ctaTitle')}>
         <div class="flip-inner">
 
           <!-- Front: normal photo -->
@@ -23,8 +29,8 @@ const about = getAbout();
           <div class="flip-back">
             <img src={nilsPhoto.src} alt="" class="w-full h-full object-cover object-top back-img" />
             <div class="flip-overlay">
-              <span class="cta-label">Meer weten?</span>
-              <p class="cta-title">Over mij →</p>
+              <span class="cta-label">{t(lang, 'hero.flip.ctaLabel')}</span>
+              <p class="cta-title">{t(lang, 'hero.flip.ctaTitle')}</p>
             </div>
           </div>
 
@@ -42,8 +48,8 @@ const about = getAbout();
         {about?.tagline}
       </p>
       <div class="flex gap-3 flex-wrap mt-2 hero-fade" style="animation-delay: 320ms">
-        <a href="/projects" class={buttonVariants({ size: "lg" })}>Bekijk projecten</a>
-        <a href="/about" class={buttonVariants({ variant: "outline", size: "lg" })}>Over mij</a>
+        <a href={lang === 'en' ? '/en/projects' : '/projects'} class={buttonVariants({ size: "lg" })}>{t(lang, 'cta.viewProjects')}</a>
+        <a href={lang === 'en' ? '/en/about' : '/about'} class={buttonVariants({ variant: "outline", size: "lg" })}>{t(lang, 'cta.about')}</a>
       </div>
     </div>
     </div>

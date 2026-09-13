@@ -1,25 +1,33 @@
 ---
 import SkillBadge from './SkillBadge.astro';
+import { t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = getLang(Astro.currentLocale) } = Astro.props;
 
 const skillCategories = [
   {
-    label: 'Talen',
+    key: 'skills.lang',
     skills: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Bash'],
   },
   {
-    label: 'Frontend',
+    key: 'skills.frontend',
     skills: ['React', 'Vue', 'Angular', 'Astro', 'HTML/CSS'],
   },
   {
-    label: 'Backend & Runtime',
+    key: 'skills.backend',
     skills: ['Node.js', '.NET', 'ASP.NET', 'REST API', 'Bun'],
   },
   {
-    label: 'DevOps & Infra',
+    key: 'skills.devops',
     skills: ['Docker', 'Kubernetes', 'GitHub Actions', 'Jenkins', 'Linux', 'Nginx', 'AWS', 'Azure'],
   },
   {
-    label: 'Test Automation',
+    key: 'skills.test',
     skills: ['Playwright', 'Selenium', 'Cypress'],
   },
 ];
@@ -29,7 +37,7 @@ const skillCategories = [
   {skillCategories.map((cat) => (
     <div>
       <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
-        {cat.label}
+        {t(lang, cat.key)}
       </span>
       <div class="flex flex-wrap gap-2">
         {cat.skills.map((skill) => <SkillBadge name={skill} />)}

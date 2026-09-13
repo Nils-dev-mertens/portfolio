@@ -1,18 +1,24 @@
 ---
 import SectionHeader from './SectionHeader.astro';
 import SkillsGrid from './SkillsGrid.astro';
-import { getAbout } from '@portfolio/data';
+import { getAbout, t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
 
-const about = getAbout();
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = getLang(Astro.currentLocale) } = Astro.props;
+const about = getAbout(lang);
 ---
 
 <section class="py-16">
   <div class="container">
     <SectionHeader
-      label="Over mij"
-      title="Wie is Nils?"
-      ctaHref="/about"
-      ctaLabel="Lees meer"
+      label={t(lang, 'nav.about')}
+      title={t(lang, 'about.title')}
+      ctaHref={lang === 'en' ? '/en/about' : '/about'}
+      ctaLabel={t(lang, 'cta.readMore')}
     />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
@@ -21,8 +27,8 @@ const about = getAbout();
           <p class="text-foreground leading-[1.7]">{paragraph}</p>
         ))}
         <p class="text-foreground leading-[1.7]">
-          Alles wat ik bouw is publiek op <a href={about?.github_url} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">GitHub</a>.
-          Open source minded, hands-on aanpak.
+          {t(lang, 'about.intro.githubNote')}
+          <a href={about?.github_url} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">GitHub</a>.
         </p>
         <div class="flex flex-wrap gap-2 mt-2 items-center">
           <span class="text-[11px] font-medium text-foreground/70">📍 {about?.location}</span>

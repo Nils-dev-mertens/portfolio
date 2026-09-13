@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeroSection from '../../components/HeroSection.astro';
+import ProjectsPreview from '../../components/ProjectsPreview.astro';
+import AboutPreview from '../../components/AboutPreview.astro';
+import GitHubContributions from '../../components/GitHubContributions.astro';
+import WorkExperience from '../../components/WorkExperience.astro';
+import ContactStrip from '../../components/ContactStrip.astro';
+import type { Lang } from '@portfolio/data';
+
+const lang = 'en' as Lang;
+---
+
+<BaseLayout
+  title="Nils Mertens | Junior Fullstack Developer"
+  description="Junior Fullstack Developer from Antwerp. Specialized in test automation, DevOps and open source projects."
+>
+  <HeroSection lang={lang} />
+  <ProjectsPreview server:defer lang={lang} />
+  <GitHubContributions lang={lang} />
+  <AboutPreview lang={lang} />
+  <WorkExperience server:defer lang={lang} />
+  <ContactStrip lang={lang} />
+</BaseLayout>

@@ -1,9 +1,16 @@
 ---
-import { getGithubContributions, getAbout } from '@portfolio/data';
+import { getGithubContributions, getAbout, t, type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
 
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = getLang(Astro.currentLocale) } = Astro.props;
 const all = getGithubContributions(); // { date: 'YYYY-MM-DD', count }[]
-const about = getAbout();
+const about = getAbout(lang);
 
+const dateLocale = lang === 'en' ? 'en-GB' : 'nl-NL';
 const MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 
 // ── helpers ──────────────────────────────────────────────────────────
@@ -73,7 +80,7 @@ const data = buildWindow(new Date(), all);
 const hasAnyData = all.length > 0;
 
 const cellLabel = (c: Cell) =>
-  `${c.date} · ${c.count} ${c.count === 1 ? 'bijdrage' : 'bijdragen'}`;
+  `${c.date} · ${c.count} ${c.count === 1 ? t(lang, 'github.contribution') : t(lang, 'github.contributions_plural')}`;
 ---
 
 <section class="py-16">
@@ -82,9 +89,9 @@ const cellLabel = (c: Cell) =>
     <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
       <div>
         <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
-          GitHub
+          {t(lang, 'github.label')}
         </span>
-        <h2 class="text-[30px] font-bold leading-tight text-primary">Code in cijfers</h2>
+        <h2 class="text-[30px] font-bold leading-tight text-primary">{t(lang, 'github.title')}</h2>
       </div>
       {about?.github_url && (
         <a
@@ -93,14 +100,14 @@ const cellLabel = (c: Cell) =>
           rel="noopener noreferrer"
           class="text-[11px] font-medium uppercase tracking-[0.08em] text-pink whitespace-nowrap transition-colors duration-150 hover:text-primary"
         >
-          GitHub →
+          {t(lang, 'github.label')} →
         </a>
       )}
     </div>
 
     {!hasAnyData && (
       <p class="text-sm text-foreground/55 mb-6">
-        Nog geen bijdragen gesynchroniseerd — de cronjob vult dit automatisch aan.
+        {t(lang, 'github.none')}
       </p>
     )}
 
@@ -129,7 +136,7 @@ const cellLabel = (c: Cell) =>
 
     <!-- Total -->
     <p id="gh-total" class="mt-5 text-[13px] text-foreground/60">
-      {data.total} bijdragen in het afgelopen jaar
+      {t(lang, 'github.contributions', { total: data.total })}
     </p>
   </div>
 </section>
@@ -203,13 +210,17 @@ const cellLabel = (c: Cell) =>
 
 <div id="gh-tip" role="tooltip"></div>
 
-<script is:inline>
+<script is:inline define:vars={{
+  GH_DATE_LOCALE: dateLocale,
+  GH_CONTRIBUTION: t(lang, 'github.contribution'),
+  GH_CONTRIBUTIONS_PLURAL: t(lang, 'github.contributions_plural'),
+}}>
   const tip = document.getElementById('gh-tip');
   const grid = document.getElementById('gh-grid');
 
-  function nlDate(ds) {
+  function fmtDate(ds) {
     const d = new Date(ds + 'T00:00:00Z');
-    return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' });
+    return d.toLocaleDateString(GH_DATE_LOCALE, { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   // tooltip (event delegation — skipped for days with 0 contributions)
@@ -219,7 +230,8 @@ const cellLabel = (c: Cell) =>
     const date = cell.dataset.date;
     const count = Number(cell.dataset.count || 0);
     if (!date || count === 0) return;
-    tip.textContent = `${nlDate(date)} · ${count} ${count === 1 ? 'bijdrage' : 'bijdragen'}`;
+    const unit = count === 1 ? GH_CONTRIBUTION : GH_CONTRIBUTIONS_PLURAL;
+    tip.textContent = `${fmtDate(date)} · ${count} ${unit}`;
     tip.classList.add('show');
   });
   grid?.addEventListener('mousemove', (e) => {

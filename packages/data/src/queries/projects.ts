@@ -1,12 +1,16 @@
 import { eq, desc, and } from 'drizzle-orm';
 import { getDb } from '../db';
 import { projects, ProjectCategory } from '../db/schema';
+import { type Lang, pick } from '../i18n';
 
 export type { ProjectCategory } from '../db/schema';
 export { PROJECT_CATEGORIES } from '../db/schema';
 export type Project = Omit<typeof projects.$inferSelect, 'tags'> & { tags: string[] };
 
-export function getProjects(opts: { featured?: boolean; category?: ProjectCategory; limit?: number } = {}): Project[] {
+export function getProjects(
+  opts: { featured?: boolean; category?: ProjectCategory; limit?: number } = {},
+  lang: Lang = 'nl',
+): Project[] {
   const db = getDb();
 
   const conditions = [
@@ -23,5 +27,13 @@ export function getProjects(opts: { featured?: boolean; category?: ProjectCatego
     .limit(opts.limit ?? -1)
     .all();
 
-  return rows.map((row) => ({ ...row, tags: JSON.parse(row.tags) as string[] }));
+  return rows.map((row) => {
+    const project: Project = { ...row, tags: JSON.parse(row.tags) as string[] };
+    if (lang === 'nl') return project;
+    return {
+      ...project,
+      title: pick(row, 'title', lang) as string,
+      description: pick(row, 'description', lang) as string,
+    };
+  });
 }

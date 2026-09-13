@@ -7,14 +7,17 @@ import AboutPreview from '../components/AboutPreview.astro';
 import GitHubContributions from '../components/GitHubContributions.astro';
 import WorkExperience from '../components/WorkExperience.astro';
 import ContactStrip from '../components/ContactStrip.astro';
+import { getLang } from '../lib/i18n';
+
+const lang = getLang(Astro.currentLocale);
 ---
 
 <BaseLayout>
-  <HeroSection />
+  <HeroSection lang={lang} />
   <!-- <HeroSectionOld /> -->
-  <ProjectsPreview server:defer/>
-  <GitHubContributions />
-  <AboutPreview />
-  <WorkExperience server:defer />
-  <ContactStrip />
+  <ProjectsPreview server:defer lang={lang} />
+  <GitHubContributions lang={lang} />
+  <AboutPreview lang={lang} />
+  <WorkExperience server:defer lang={lang} />
+  <ContactStrip lang={lang} />
 </BaseLayout>
