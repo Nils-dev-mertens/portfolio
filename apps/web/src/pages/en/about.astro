@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import SkillsGrid from '../../components/SkillsGrid.astro';
+import WorkExperience from '../../components/WorkExperience.astro';
+import ContactStrip from '../../components/ContactStrip.astro';
+import { getAbout, getEducation, t, type Lang } from '@portfolio/data';
+
+const lang = 'en' as Lang;
+const about = getAbout(lang);
+const education = getEducation(lang);
+
+const githubLabel = about?.github_url.replace('https://github.com/', '') ?? '';
+
+const meta = [
+  { label: t(lang, 'about.meta.location'), value: about?.location ?? '', href: null },
+  { label: t(lang, 'about.meta.email'), value: about?.email ?? '', href: `mailto:${about?.email}` },
+  { label: t(lang, 'about.meta.github'), value: githubLabel, href: about?.github_url ?? null },
+];
+---
+
+<BaseLayout
+  title="About — Nils Mertens"
+  description="Junior Fullstack Developer from Antwerp. More about Nils Mertens: background, education and work experience."
+>
+  <div class="pt-16">
+    <div class="container">
+
+      <section class="border-b border-border">
+        <h1 class="sr-only">About — Nils Mertens</h1>
+
+        <div class="flex flex-col items-center text-center py-16 md:py-24">
+          <p class="text-[clamp(2.5rem,7vw,5rem)] font-bold leading-[1.05] text-primary max-w-4xl">
+            {about?.quote}
+          </p>
+          <p class="mt-6 text-[clamp(1rem,2vw,1.2rem)] font-medium text-foreground/30 max-w-md leading-[1.4]">
+            {about?.quote_sub}
+          </p>
+        </div>
+
+        <div class="border-t border-border" />
+
+        <div class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-12 items-start py-16">
+
+          <div class="flex flex-col gap-4">
+            {about?.bio_about.map((paragraph) => (
+              <p class="text-foreground leading-[1.7]">{paragraph}</p>
+            ))}
+          </div>
+
+          <dl class="flex flex-col">
+            {meta.map((row) => (
+              <div class="flex items-center justify-between py-3 border-b border-border">
+                <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">{row.label}</dt>
+                <dd>
+                  {row.href
+                    ? <a href={row.href} target={row.href.startsWith('http') ? '_blank' : undefined} rel={row.href.startsWith('http') ? 'noopener noreferrer' : undefined} class="text-sm text-primary hover:underline">{row.value}</a>
+                    : <span class="text-sm text-foreground">{row.value}</span>
+                  }
+                </dd>
+              </div>
+            ))}
+            <div class="flex items-center justify-between py-3">
+              <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">{t(lang, 'about.meta.status')}</dt>
+              <dd>
+                {about?.status_active && (
+                  <span class="inline-block py-0.5 px-2.5 rounded-full text-[11px] font-medium uppercase tracking-[0.06em] text-primary bg-primary/10 border border-primary/30">
+                    {about?.status_label}
+                  </span>
+                )}
+              </dd>
+            </div>
+          </dl>
+
+        </div>
+      </section>
+
+      <section class="py-16 border-b border-border">
+        <SectionHeader label={t(lang, 'about.skills.label')} title={t(lang, 'about.skills.title')} />
+        <SkillsGrid lang={lang} />
+      </section>
+
+    </div>
+  </div>
+
+  <WorkExperience server:defer lang={lang} />
+
+  <div class="container">
+    <section class="py-16">
+      <SectionHeader label={t(lang, 'about.education.label')} title={t(lang, 'about.education.title')} />
+      <div class="flex flex-col">
+        {education.map((edu, i) => (
+          <div class={`edu-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md ${i !== 0 ? 'border-t border-border' : ''}`}>
+            <div class="accent-bar absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-primary opacity-0 transition-opacity duration-200" />
+            <div class="shrink-0 size-9 rounded-md bg-card border border-border flex items-center justify-center text-sm font-bold text-foreground/80">
+              {edu.institution.charAt(0)}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-4 flex-wrap">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-sm font-semibold text-foreground">{edu.institution}</span>
+                  <span class="text-foreground/40 text-xs">·</span>
+                  <span class="text-xs text-foreground/70 italic">{edu.program}</span>
+                </div>
+                <span class="text-[11px] text-foreground/55 shrink-0 tabular-nums">
+                  {edu.start_date.slice(0, 4)} – {edu.end_date ? edu.end_date.slice(0, 4) : 'heden'}
+                </span>
+              </div>
+              {edu.description && (
+                <p class="text-sm text-foreground/75 leading-relaxed mt-1">{edu.description}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <ContactStrip />
+
+<style>
+  .edu-row { transition: background-color 250ms ease; }
+  .edu-row:hover { background-color: rgba(255, 255, 255, 0.018); }
+  .edu-row:hover .accent-bar { opacity: 1; }
+</style>
+</BaseLayout>
