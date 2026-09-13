@@ -13,6 +13,10 @@ const messages: Record<Lang, Messages> = {
     'cta.readMore': 'Lees meer',
     'cta.allProjects': 'Alle projecten',
 
+    'hero.mosaic.controls': 'Fotocarrousel bediening',
+    'hero.mosaic.previous': 'Vorige foto',
+    'hero.mosaic.next': 'Volgende foto',
+    'hero.mosaic.open': 'Selecteer foto',
     'hero.flip.ctaLabel': 'Meer weten?',
     'hero.flip.ctaTitle': 'Over mij →',
 
@@ -70,6 +74,10 @@ const messages: Record<Lang, Messages> = {
     'cta.readMore': 'Read more',
     'cta.allProjects': 'All projects',
 
+    'hero.mosaic.controls': 'Photo carousel controls',
+    'hero.mosaic.previous': 'Previous photo',
+    'hero.mosaic.next': 'Next photo',
+    'hero.mosaic.open': 'Select photo',
     'hero.flip.ctaLabel': 'Want to know more?',
     'hero.flip.ctaTitle': 'About me →',
 
