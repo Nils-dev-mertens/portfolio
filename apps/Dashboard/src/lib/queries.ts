@@ -1,5 +1,5 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectsApi, workApi, educationApi, aboutApi } from './api';
+import { projectsApi, workApi, educationApi, aboutApi, skillsApi } from './api';
 
 // ── Query keys ────────────────────────────────────────────────────────────────
 
@@ -22,6 +22,10 @@ export const keys = {
     all: ['about'] as const,
     detail: () => ['about', 'detail'] as const,
   },
+  skills: {
+    all: ['skills'] as const,
+    list: () => ['skills', 'list'] as const,
+  },
 };
 
 // ── Query options ──────────────────────────────────────────────────────────────
@@ -43,6 +47,9 @@ export const educationQuery = () =>
 
 export const aboutQuery = () =>
   queryOptions({ queryKey: keys.about.detail(), queryFn: () => aboutApi.get() });
+
+export const skillsQuery = () =>
+  queryOptions({ queryKey: keys.skills.list(), queryFn: () => skillsApi.list() });
 
 // ── Mutations ─────────────────────────────────────────────────────────────────
 
@@ -120,6 +127,34 @@ export function useDeleteEducation() {
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.education.all }),
   });
 }
+
+// Skills mutations all return the fresh list, so a single invalidate covers them.
+function useSkillsMutation<TVariables>(mutationFn: (variables: TVariables) => Promise<unknown>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn,
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.skills.all }),
+  });
+}
+
+export const useCreateSkillCategory = () => useSkillsMutation(skillsApi.createCategory);
+
+export const useUpdateSkillCategory = () =>
+  useSkillsMutation(
+    ({ id, ...body }: { id: string } & Parameters<typeof skillsApi.updateCategory>[1]) =>
+      skillsApi.updateCategory(id, body)
+  );
+
+export const useDeleteSkillCategory = () => useSkillsMutation(skillsApi.deleteCategory);
+
+export const useCreateSkillItem = () => useSkillsMutation(skillsApi.createItem);
+
+export const useUpdateSkillItem = () =>
+  useSkillsMutation(({ id, ...body }: { id: string } & Parameters<typeof skillsApi.updateItem>[1]) =>
+    skillsApi.updateItem(id, body)
+  );
+
+export const useDeleteSkillItem = () => useSkillsMutation(skillsApi.deleteItem);
 
 export function useUpdateAbout() {
   const qc = useQueryClient();

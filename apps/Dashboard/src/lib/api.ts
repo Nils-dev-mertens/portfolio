@@ -64,6 +64,20 @@ export type Education = {
   end_date: string | null;
 };
 
+export type SkillItem = {
+  id: string;
+  name: string;
+  sort_order: number;
+};
+
+export type SkillCategory = {
+  id: string;
+  label: string;
+  label_en: string;
+  sort_order: number;
+  skills: SkillItem[];
+};
+
 export type About = {
   id: string;
   location: string;
@@ -126,6 +140,37 @@ export const aboutApi = {
   get: () => request<About>('/api/about'),
   update: (id: string, body: Partial<Omit<About, 'id'>>) =>
     request<About>(`/api/about/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+};
+
+// ── Skills ────────────────────────────────────────────────────────────────────
+
+// Every mutation returns the full, updated list of categories.
+export const skillsApi = {
+  list: () => request<SkillCategory[]>('/api/skills'),
+  createCategory: (body: { label: string; label_en?: string; sort_order?: number }) =>
+    request<SkillCategory[]>('/api/skills/categories', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  updateCategory: (
+    id: string,
+    body: Partial<{ label: string; label_en: string; sort_order: number }>
+  ) =>
+    request<SkillCategory[]>(`/api/skills/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
+  deleteCategory: (id: string) =>
+    request<SkillCategory[]>(`/api/skills/categories/${id}`, { method: 'DELETE' }),
+  createItem: (body: { category_id: string; name: string }) =>
+    request<SkillCategory[]>('/api/skills/items', { method: 'POST', body: JSON.stringify(body) }),
+  updateItem: (id: string, body: Partial<{ name: string; sort_order: number }>) =>
+    request<SkillCategory[]>(`/api/skills/items/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
+  deleteItem: (id: string) =>
+    request<SkillCategory[]>(`/api/skills/items/${id}`, { method: 'DELETE' }),
 };
 
 // ── Auth ──────────────────────────────────────────────────────────────────────

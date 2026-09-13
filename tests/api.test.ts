@@ -125,3 +125,128 @@ describe('projects', () => {
     expect(afterRes.status).toBe(404);
   });
 });
+
+describe('skills', () => {
+  async function authHeaders() {
+    const res = await login('test-password-123');
+    const { token } = (await res.json()) as { token: string };
+    return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  }
+
+  test('GET /api/skills returns the seeded categories with their skills', async () => {
+    const res = await app.request('/api/skills');
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      id: string;
+      label: string;
+      label_en: string;
+      skills: { id: string; name: string }[];
+    }[];
+    expect(body.length).toBe(6);
+    expect(body[0].id).toBe('languages');
+    expect(body[5].id).toBe('tooling');
+    expect(body[0].label).toBe('Talen');
+    expect(body[0].label_en).toBe('Languages');
+    expect(body[0].skills.map((s) => s.name)).toContain('TypeScript');
+  });
+
+  test('mutations without a token are rejected with 401', async () => {
+    const res = await app.request('/api/skills/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label: 'Nope' }),
+    });
+    expect(res.status).toBe(401);
+  });
+
+  test('a category requires a label', async () => {
+    const headers = await authHeaders();
+    const res = await app.request('/api/skills/categories', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ label: '   ' }),
+    });
+    expect(res.status).toBe(400);
+  });
+
+  test('full CRUD flow for a category and its skills', async () => {
+    const headers = await authHeaders();
+    type List = {
+      id: string;
+      label: string;
+      label_en: string;
+      sort_order: number;
+      skills: { id: string; name: string }[];
+    }[];
+
+    // create a category — it is appended after the seeded ones
+    const createRes = await app.request('/api/skills/categories', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ label: 'Testcategorie', label_en: 'Test category' }),
+    });
+    expect(createRes.status).toBe(201);
+    let list = (await createRes.json()) as List;
+    const category = list.find((c) => c.label === 'Testcategorie')!;
+    expect(category).toBeDefined();
+    expect(category.skills).toEqual([]);
+    expect(category.sort_order).toBe(6);
+
+    // add a skill to it
+    const itemRes = await app.request('/api/skills/items', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ category_id: category.id, name: 'Vitest' }),
+    });
+    expect(itemRes.status).toBe(201);
+    list = (await itemRes.json()) as List;
+    const withSkill = list.find((c) => c.id === category.id)!;
+    expect(withSkill.skills.map((s) => s.name)).toEqual(['Vitest']);
+
+    // rename the skill, then the category
+    const itemPut = await app.request(`/api/skills/items/${withSkill.skills[0].id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ name: 'Vitest 2' }),
+    });
+    expect(itemPut.status).toBe(200);
+    list = (await itemPut.json()) as List;
+    expect(list.find((c) => c.id === category.id)!.skills.map((s) => s.name)).toEqual(['Vitest 2']);
+
+    const catPut = await app.request(`/api/skills/categories/${category.id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ label_en: 'Renamed', sort_order: 1 }),
+    });
+    expect(catPut.status).toBe(200);
+    list = (await catPut.json()) as List;
+    expect(list.find((c) => c.id === category.id)!.label_en).toBe('Renamed');
+    expect(list[0].id).toBe('languages');
+
+    // deleting the category takes its skills with it
+    const delRes = await app.request(`/api/skills/categories/${category.id}`, {
+      method: 'DELETE',
+      headers,
+    });
+    expect(delRes.status).toBe(200);
+    list = (await delRes.json()) as List;
+    expect(list.find((c) => c.id === category.id)).toBeUndefined();
+    expect(list.reduce((sum, c) => sum + c.skills.length, 0)).toBe(34);
+  });
+
+  test('unknown ids return 404', async () => {
+    const headers = await authHeaders();
+    const cat = await app.request('/api/skills/categories/nope', {
+      method: 'DELETE',
+      headers,
+    });
+    expect(cat.status).toBe(404);
+
+    const item = await app.request('/api/skills/items', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ category_id: 'nope', name: 'X' }),
+    });
+    expect(item.status).toBe(400);
+  });
+});

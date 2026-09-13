@@ -29,8 +29,8 @@ function formatPeriod(start: string, end: string | null, current: boolean) {
     </div>
 
     <div class="flex flex-col">
-      {jobs.map((job, i) => (
-        <div class={`job-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md cursor-default ${i !== 0 ? 'border-t border-border' : ''}`}>
+      {jobs.map((job) => (
+        <div class="job-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md cursor-default">
 
           <!-- Left accent bar (revealed on hover) -->
           <div class="accent-bar absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-pink opacity-0 transition-opacity duration-200" />

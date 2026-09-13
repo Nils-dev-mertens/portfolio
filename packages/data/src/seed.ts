@@ -1,5 +1,5 @@
 import { getDb } from './db';
-import { projects, work_experience, education, about } from './db/schema';
+import { projects, work_experience, education, about, skill_categories, skills } from './db/schema';
 
 const data: (typeof projects.$inferInsert)[] = [
   {
@@ -118,6 +118,36 @@ const educationData: (typeof education.$inferInsert)[] = [
   },
 ];
 
+const skillCategoryData: (typeof skill_categories.$inferInsert)[] = [
+  { id: 'languages', label: 'Talen', label_en: 'Languages', sort_order: 0 },
+  { id: 'frontend', label: 'Frontend', label_en: 'Frontend', sort_order: 1 },
+  { id: 'backend', label: 'Backend & Runtime', label_en: 'Backend & Runtime', sort_order: 2 },
+  { id: 'devops', label: 'DevOps & Infra', label_en: 'DevOps & Infra', sort_order: 3 },
+  { id: 'test', label: 'Test Automation', label_en: 'Test Automation', sort_order: 4 },
+  { id: 'tooling', label: 'Tooling & Workflow', label_en: 'Tooling & Workflow', sort_order: 5 },
+];
+
+const skillGroup = (categoryId: string, names: string[]): (typeof skills.$inferInsert)[] =>
+  names.map((name, i) => ({ id: `${categoryId}-${i}`, category_id: categoryId, name, sort_order: i }));
+
+const skillData: (typeof skills.$inferInsert)[] = [
+  ...skillGroup('languages', ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Bash']),
+  ...skillGroup('frontend', ['React', 'Vue', 'Angular', 'Astro', 'HTML/CSS']),
+  ...skillGroup('backend', ['Node.js', '.NET', 'ASP.NET', 'REST API', 'Bun']),
+  ...skillGroup('devops', [
+    'Docker',
+    'Kubernetes',
+    'GitHub Actions',
+    'Jenkins',
+    'Linux',
+    'Nginx',
+    'AWS',
+    'Azure',
+  ]),
+  ...skillGroup('test', ['Playwright', 'Selenium', 'Cypress']),
+  ...skillGroup('tooling', ['Git', 'GitHub', 'Turborepo', 'Vite', 'Tailwind CSS', 'ESLint', 'Prettier']),
+];
+
 const aboutData: (typeof about.$inferInsert) = {
   id: 'main',
   location: 'Antwerpen, België',
@@ -154,5 +184,27 @@ export function seed() {
   db.delete(about).run();
   db.insert(about).values(aboutData).run();
 
-  console.log(`Seeded ${data.length} projects, ${workExperienceData.length} work experience entries, ${educationData.length} education entries, and about data into portfolio.db`);
+  db.delete(skills).run();
+  db.delete(skill_categories).run();
+  db.insert(skill_categories).values(skillCategoryData).run();
+  db.insert(skills).values(skillData).run();
+
+  console.log(`Seeded ${data.length} projects, ${workExperienceData.length} work experience entries, ${educationData.length} education entries, ${skillCategoryData.length} skill categories and about data into portfolio.db`);
+}
+
+/**
+ * Fills the default skill categories and skills, but only while the table is
+ * still empty. Databases created before skills existed get the content that used
+ * to be hardcoded in the web component, without overwriting anything that was
+ * edited in the dashboard since.
+ */
+export function seedSkillsDefaults(): boolean {
+  const db = getDb();
+  const existing = db.select().from(skill_categories).all().length;
+  if (existing > 0) return false;
+
+  db.insert(skill_categories).values(skillCategoryData).run();
+  db.insert(skills).values(skillData).run();
+  console.log(`Seeded ${skillCategoryData.length} skill categories and ${skillData.length} skills`);
+  return true;
 }

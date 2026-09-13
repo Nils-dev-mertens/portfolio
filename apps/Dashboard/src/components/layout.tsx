@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useRouterState, useRouter } from '@tanstack/react-router';
-import { LayoutDashboard, FolderKanban, Briefcase, GraduationCap, User, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Briefcase, GraduationCap, User, Sparkles, LogOut, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { auth } from '@/lib/api';
 
@@ -10,6 +10,7 @@ const nav = [
   { to: '/work', label: 'Work', icon: Briefcase },
   { to: '/education', label: 'Education', icon: GraduationCap },
   { to: '/about', label: 'About', icon: User },
+  { to: '/skills', label: 'Skills', icon: Sparkles },
 ];
 
 export function DashboardLayout() {

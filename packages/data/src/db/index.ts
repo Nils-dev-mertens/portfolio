@@ -38,6 +38,14 @@ export function getDb() {
       description TEXT, description_en TEXT,
       start_date TEXT NOT NULL, end_date TEXT
     );
+    CREATE TABLE IF NOT EXISTS skill_categories (
+      id TEXT PRIMARY KEY, label TEXT NOT NULL, label_en TEXT NOT NULL DEFAULT '',
+      sort_order INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS skills (
+      id TEXT PRIMARY KEY, category_id TEXT NOT NULL, name TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0
+    );
     CREATE TABLE IF NOT EXISTS about (
       id TEXT PRIMARY KEY, location TEXT NOT NULL, email TEXT NOT NULL,
       github_url TEXT NOT NULL, status_label TEXT NOT NULL, status_label_en TEXT NOT NULL DEFAULT '',

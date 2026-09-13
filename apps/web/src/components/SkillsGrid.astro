@@ -1,47 +1,87 @@
 ---
-import SkillBadge from './SkillBadge.astro';
-import { t, type Lang } from '@portfolio/data';
+import { getSkillCategories, type Lang } from '@portfolio/data';
 import { getLang } from '../lib/i18n';
 
 interface Props {
   lang?: Lang;
+  /** Columns at the lg breakpoint — the About page uses 3, the homepage preview 2. */
+  columns?: 2 | 3;
 }
 
-const { lang = getLang(Astro.currentLocale) } = Astro.props;
+const { lang = getLang(Astro.currentLocale), columns = 3 } = Astro.props;
 
-const skillCategories = [
-  {
-    key: 'skills.lang',
-    skills: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Bash'],
-  },
-  {
-    key: 'skills.frontend',
-    skills: ['React', 'Vue', 'Angular', 'Astro', 'HTML/CSS'],
-  },
-  {
-    key: 'skills.backend',
-    skills: ['Node.js', '.NET', 'ASP.NET', 'REST API', 'Bun'],
-  },
-  {
-    key: 'skills.devops',
-    skills: ['Docker', 'Kubernetes', 'GitHub Actions', 'Jenkins', 'Linux', 'Nginx', 'AWS', 'Azure'],
-  },
-  {
-    key: 'skills.test',
-    skills: ['Playwright', 'Selenium', 'Cypress'],
-  },
-];
+const gridClass = columns === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
+
+// Categories are managed in the dashboard; empty ones are not shown.
+const categories = getSkillCategories(lang).filter((category) => category.skills.length > 0);
 ---
 
-<div class="flex flex-col gap-8">
-  {skillCategories.map((cat) => (
-    <div>
-      <span class="block text-[11px] font-medium uppercase tracking-[0.08em] text-pink mb-2">
-        {t(lang, cat.key)}
-      </span>
-      <div class="flex flex-wrap gap-2">
-        {cat.skills.map((skill) => <SkillBadge name={skill} />)}
+{categories.length > 0 && (
+  <div class={`grid grid-cols-1 sm:grid-cols-2 ${gridClass} gap-4`}>
+    {categories.map((category, index) => (
+      <div class="skill-card relative overflow-hidden rounded-lg border border-border bg-card p-5">
+        <span class="skill-index" aria-hidden="true">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+
+        <h3 class="text-[11px] font-semibold uppercase tracking-[0.08em] text-pink">
+          {category.label}
+        </h3>
+        <div class="mt-2 h-px w-8 bg-pink/40" aria-hidden="true"></div>
+
+        <p class="skill-line mt-3">
+          {category.skills.map((skill, i) => (
+            <>
+              {i > 0 && (
+                <span class="skill-sep" aria-hidden="true">
+                  ·
+                </span>
+              )}
+              <span>{skill.name}</span>
+            </>
+          ))}
+        </p>
       </div>
-    </div>
-  ))}
-</div>
+    ))}
+  </div>
+)}
+
+<style>
+  .skill-card {
+    border-top: 2px solid color-mix(in srgb, var(--color-pink, #d85fa3) 35%, transparent);
+    transition:
+      border-color 200ms ease,
+      transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .skill-card:hover {
+    border-color: color-mix(in srgb, var(--color-pink, #d85fa3) 60%, transparent);
+    transform: translateY(-2px);
+  }
+
+  /* The number is the card's identifier, so it sits behind everything else. */
+  .skill-index {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.9rem;
+    font-size: 2.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: color-mix(in srgb, var(--foreground) 9%, transparent);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Skills read as one flowing stack line instead of a stack of rows. */
+  .skill-line {
+    font-size: 0.875rem;
+    line-height: 1.75;
+    color: color-mix(in srgb, var(--foreground) 88%, transparent);
+  }
+
+  .skill-sep {
+    color: color-mix(in srgb, var(--color-pink, #d85fa3) 55%, transparent);
+    padding-inline: 0.4rem;
+  }
+</style>
