@@ -10,6 +10,9 @@ services:
       - AUTH_PASSWORD=${AUTH_PASSWORD}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - GITHUB_USERNAME=${GITHUB_USERNAME}
+      - DEEPL_API_KEY=${DEEPL_API_KEY}
+      - DEEPL_API_URL=${DEEPL_API_URL:-https://api-free.deepl.com/v2/translate}
+      - DEEPL_TARGET_LANG=${DEEPL_TARGET_LANG:-EN-US}
       - DASHBOARD_URL=https://nilsmertens.dev/dashboard
       - WEB_URL=https://nilsmertens.dev
     volumes:
