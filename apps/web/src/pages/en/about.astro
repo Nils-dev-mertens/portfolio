@@ -107,7 +107,7 @@ const meta = [
                   <span class="text-xs text-foreground/70 italic">{edu.program}</span>
                 </div>
                 <span class="text-[11px] text-foreground/55 shrink-0 tabular-nums">
-                  {edu.start_date.slice(0, 4)} – {edu.end_date ? edu.end_date.slice(0, 4) : t(lang, 'about.education.present')}
+                  {edu.start_date.slice(0, 4)} – {edu.end_date ? edu.end_date.slice(0, 4) : 'present'}
                 </span>
               </div>
               {edu.description && (
