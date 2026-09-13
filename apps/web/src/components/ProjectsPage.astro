@@ -1,0 +1,90 @@
+---
+import { getProjects, t, type Lang } from '@portfolio/data';
+import SectionHeader from './SectionHeader.astro';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const projects = getProjects({}, lang);
+
+// 10-card bento cycle — 4 distinct row shapes before repeating:
+// Row A [7][5]  →  Row B [3][4][5]  →  Row C [5][7]  →  Row D [4][4][4]
+// Class names are written out in full so Tailwind can detect them at build time.
+const bentoPattern: Array<{ col: string; wide: boolean }> = [
+  { col: 'md:col-span-7', wide: true }, // A-left (featured)
+  { col: 'md:col-span-5', wide: false }, // A-right
+  { col: 'md:col-span-3', wide: false }, // B-left
+  { col: 'md:col-span-4', wide: false }, // B-mid
+  { col: 'md:col-span-5', wide: false }, // B-right
+  { col: 'md:col-span-5', wide: false }, // C-left
+  { col: 'md:col-span-7', wide: true }, // C-right (featured)
+  { col: 'md:col-span-4', wide: false }, // D-left
+  { col: 'md:col-span-4', wide: false }, // D-mid
+  { col: 'md:col-span-4', wide: false }, // D-right
+];
+---
+
+<section class="pt-14 pb-20">
+  <div class="container">
+    <div class="page-fade">
+      <SectionHeader label={t(lang, 'projects.page.label')} title={t(lang, 'projects.page.title')} as="h1" />
+
+      <div class="space-y-5">
+        <p class="text-xl md:text-2xl text-foreground/90 leading-relaxed">
+          {t(lang, 'projects.page.intro')}
+        </p>
+        <p class="text-base text-muted-foreground leading-relaxed">
+          {t(lang, 'projects.page.intro2')}
+        </p>
+      </div>
+    </div>
+
+    {projects.length > 0 ? (
+      <div class="grid grid-cols-12 gap-5 items-stretch mt-12">
+        {projects.map((project, i) => {
+          const { col, wide } = bentoPattern[i % bentoPattern.length];
+          return (
+            <div
+              class={`col-span-12 ${col} card-reveal h-full`}
+              style={`--delay: ${Math.min(i * 80, 480)}ms`}
+            >
+              <ProjectCard project={project} wide={wide} isLatest={i === 0} lang={lang} />
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <p class="mt-12 max-w-2xl text-muted-foreground leading-relaxed">
+        {t(lang, 'projects.page.empty')}
+      </p>
+    )}
+  </div>
+</section>
+
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-fade {
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .card-reveal {
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: var(--delay, 0ms);
+  }
+</style>

@@ -1,5 +1,5 @@
 ---
-import { ContactButtons } from "./ContactButtons";
+import ContactButtons from './ContactButtons.astro';
 import { t, type Lang } from '@portfolio/data';
 import { getLang } from '../lib/i18n';
 
@@ -36,7 +36,7 @@ const available = t(lang, 'contact.available');
           {ctaSub}
         </p>
       </div>
-      <ContactButtons client:idle lang={lang} />
+      <ContactButtons lang={lang} />
     </div>
   </div>
 </footer>

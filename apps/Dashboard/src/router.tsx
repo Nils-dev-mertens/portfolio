@@ -16,8 +16,9 @@ import { ProjectsPage } from './pages/projects';
 import { WorkPage } from './pages/work';
 import { EducationPage } from './pages/education';
 import { AboutPage } from './pages/about';
+import { SkillsPage } from './pages/skills';
 import { auth } from './lib/api';
-import { projectsQuery, workQuery, educationQuery, aboutQuery } from './lib/queries';
+import { projectsQuery, workQuery, educationQuery, aboutQuery, skillsQuery } from './lib/queries';
 
 function Pending() {
   return (
@@ -106,6 +107,14 @@ export function createAppRouter(queryClient: QueryClient) {
     component: wrap(AboutPage),
   });
 
+  const skillsRoute = createRoute({
+    getParentRoute: () => layoutRoute,
+    path: '/skills',
+    loader: () => queryClient.ensureQueryData(skillsQuery()).catch(() => null),
+    errorComponent: RouteError,
+    component: wrap(SkillsPage),
+  });
+
   const routeTree = rootRoute.addChildren([
     loginRoute,
     layoutRoute.addChildren([
@@ -114,6 +123,7 @@ export function createAppRouter(queryClient: QueryClient) {
       workRoute,
       educationRoute,
       aboutRoute,
+      skillsRoute,
     ]),
   ]);
 

@@ -4,12 +4,14 @@ import SectionHeader from '../components/SectionHeader.astro';
 import SkillsGrid from '../components/SkillsGrid.astro';
 import WorkExperience from '../components/WorkExperience.astro';
 import ContactStrip from '../components/ContactStrip.astro';
-import { getAbout, getEducation, t, type Lang } from '@portfolio/data';
+import { getAbout, getEducation, getSkillCategories, t, type Lang } from '@portfolio/data';
 import { getLang } from '../lib/i18n';
 
 const lang = getLang(Astro.currentLocale) as Lang;
 const about = getAbout(lang);
 const education = getEducation(lang);
+// Categories are dashboard-managed — hide the whole section when there are none.
+const hasSkills = getSkillCategories(lang).length > 0;
 
 const githubLabel = about?.github_url.replace('https://github.com/', '') ?? '';
 
@@ -30,7 +32,7 @@ const meta = [
     <div class="container">
 
       <!-- Bio — quote as hero -->
-      <section class="border-b border-border">
+      <section>
         <h1 class="sr-only">{lang === 'en' ? 'About — Nils Mertens' : 'Over mij — Nils Mertens'}</h1>
 
         <!-- Hero quote — full width, centered, lots of breathing room -->
@@ -59,7 +61,7 @@ const meta = [
           <!-- Right: keyline metadata -->
           <dl class="flex flex-col">
             {meta.map((row) => (
-              <div class="flex items-center justify-between py-3 border-b border-border">
+              <div class="flex items-center justify-between py-3">
                 <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/40">{row.label}</dt>
                 <dd>
                   {row.href
@@ -85,10 +87,12 @@ const meta = [
       </section>
 
       <!-- Skills -->
-      <section class="py-16 border-b border-border">
-        <SectionHeader label={t(lang, 'about.skills.label')} title={t(lang, 'about.skills.title')} />
-        <SkillsGrid lang={lang} />
-      </section>
+      {hasSkills && (
+        <section class="py-16">
+          <SectionHeader label={t(lang, 'about.skills.label')} title={t(lang, 'about.skills.title')} />
+          <SkillsGrid lang={lang} />
+        </section>
+      )}
 
     </div>
   </div>
@@ -101,8 +105,8 @@ const meta = [
     <section class="py-16">
       <SectionHeader label={t(lang, 'about.education.label')} title={t(lang, 'about.education.title')} />
       <div class="flex flex-col">
-        {education.map((edu, i) => (
-          <div class={`edu-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md ${i !== 0 ? 'border-t border-border' : ''}`}>
+        {education.map((edu) => (
+          <div class="edu-row group relative flex items-start gap-4 py-4 px-3 -mx-3 rounded-md">
             <div class="accent-bar absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-primary opacity-0 transition-opacity duration-200" />
             <div class="shrink-0 size-9 rounded-md bg-card border border-border flex items-center justify-center text-sm font-bold text-foreground/80">
               {edu.institution.charAt(0)}
@@ -115,7 +119,7 @@ const meta = [
                   <span class="text-xs text-foreground/70 italic">{edu.program}</span>
                 </div>
                 <span class="text-[11px] text-foreground/55 shrink-0 tabular-nums">
-                  {edu.start_date.slice(0, 4)} – {edu.end_date ? edu.end_date.slice(0, 4) : 'heden'}
+                  {edu.start_date.slice(0, 4)} – {edu.end_date ? edu.end_date.slice(0, 4) : t(lang, 'about.education.present')}
                 </span>
               </div>
               {edu.description && (
@@ -128,7 +132,7 @@ const meta = [
     </section>
   </div>
 
-  <ContactStrip />
+  <ContactStrip lang={lang} />
 
 <style>
   .edu-row {

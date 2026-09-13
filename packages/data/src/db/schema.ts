@@ -55,6 +55,20 @@ export const education = sqliteTable('education', {
   end_date: text('end_date'),
 });
 
+export const skill_categories = sqliteTable('skill_categories', {
+  id: text('id').primaryKey(),
+  label: text('label').notNull(),
+  label_en: text('label_en').notNull().default(''),
+  sort_order: integer('sort_order').notNull().default(0),
+});
+
+export const skills = sqliteTable('skills', {
+  id: text('id').primaryKey(),
+  category_id: text('category_id').notNull(),
+  name: text('name').notNull(),
+  sort_order: integer('sort_order').notNull().default(0),
+});
+
 export const about = sqliteTable('about', {
   id: text('id').primaryKey(),
   location: text('location').notNull(),

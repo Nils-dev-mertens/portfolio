@@ -1,4 +1,4 @@
-import { getDb, projects, seed, startScheduler } from "@portfolio/data";
+import { getDb, projects, seed, seedSkillsDefaults, startScheduler } from "@portfolio/data";
 import { createApp } from './app';
 
 // Initialize database on startup (wrapped in IIFE to handle async)
@@ -19,6 +19,10 @@ import { createApp } from './app';
     }
   }
 })();
+
+// Databases created before skills were editable get the old hardcoded skills,
+// once. Existing skill content is never overwritten.
+seedSkillsDefaults();
 
 // Start background jobs (GitHub contributions sync, CMS sync, ...) — runs hourly.
 startScheduler();

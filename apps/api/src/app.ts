@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { projectsRouter } from './routes/projects';
+import { skillsRouter } from './routes/skills';
 import { aboutRouter } from './routes/about';
 import { workRouter } from './routes/work';
 import { educationRouter } from './routes/education';
@@ -43,6 +44,7 @@ export function createApp() {
   });
 
   app.route('/api/projects', projectsRouter);
+  app.route('/api/skills', skillsRouter);
   app.route('/api/about', aboutRouter);
   app.route('/api/work', workRouter);
   app.route('/api/education', educationRouter);

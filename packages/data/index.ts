@@ -1,5 +1,6 @@
 export { getAbout, type About } from './src/queries/about';
 export { getProjects, type Project, type ProjectCategory, PROJECT_CATEGORIES } from './src/queries/projects';
+export { getSkillCategories, type SkillCategory, type SkillItem } from './src/queries/skills';
 export { getWorkExperience, type WorkExperience } from './src/queries/work_experience';
 export { getEducation, type Education } from './src/queries/education';
 export {

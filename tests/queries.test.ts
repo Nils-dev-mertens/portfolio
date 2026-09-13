@@ -6,6 +6,7 @@ import {
   getAbout,
   getWorkExperience,
   getEducation,
+  getSkillCategories,
   getGithubContributions,
   getGithubActivity,
   github_activity,
@@ -102,5 +103,26 @@ describe('getGithubActivity', () => {
     expect(rows.length).toBe(2);
     expect(rows[0].id).toBe('a1');
     expect(rows[1].id).toBe('a2');
+  });
+});
+
+describe('getSkillCategories', () => {
+  test('returns the seeded categories in order, with their skills', () => {
+    const rows = getSkillCategories();
+    expect(rows.map((c) => c.id)).toEqual([
+      'languages',
+      'frontend',
+      'backend',
+      'devops',
+      'test',
+      'tooling',
+    ]);
+    expect(rows[0].skills.map((s) => s.name)).toContain('TypeScript');
+    expect(rows[3].skills.length).toBe(8);
+  });
+
+  test('localizes the label from the _en companion column', () => {
+    expect(getSkillCategories('nl')[0].label).toBe('Talen');
+    expect(getSkillCategories('en')[0].label).toBe('Languages');
   });
 });

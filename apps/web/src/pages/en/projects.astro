@@ -1,73 +1,14 @@
 ---
-import { getProjects, t, type Lang } from '@portfolio/data';
+import { type Lang } from '@portfolio/data';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ProjectCard from '../../components/ProjectCard.astro';
-import SectionHeader from '../../components/SectionHeader.astro';
+import ProjectsPage from '../../components/ProjectsPage.astro';
 
 const lang = 'en' as Lang;
-const projects = getProjects({}, lang);
-
-const bentoPattern: Array<{ col: string; wide: boolean }> = [
-  { col: 'col-span-7', wide: true  },
-  { col: 'col-span-5', wide: false },
-  { col: 'col-span-3', wide: false },
-  { col: 'col-span-4', wide: false },
-  { col: 'col-span-5', wide: false },
-  { col: 'col-span-5', wide: false },
-  { col: 'col-span-7', wide: true  },
-  { col: 'col-span-4', wide: false },
-  { col: 'col-span-4', wide: false },
-  { col: 'col-span-4', wide: false },
-];
-
-function getBento(i: number) {
-  return bentoPattern[i % bentoPattern.length];
-}
 ---
 
 <BaseLayout
   title="Projects — Nils Mertens"
   description="All open source projects by Nils Mertens: web apps, CLI tools, DevOps setups and automation scripts."
 >
-  <section class="pt-16 pb-24">
-    <div class="container">
-      <div class="page-fade">
-        <SectionHeader label={t(lang, 'projects.page.label')} title={t(lang, 'projects.page.title')} as="h1" />
-        <p class="mt-4 max-w-2xl text-muted-foreground text-base leading-relaxed">
-          {t(lang, 'projects.page.intro')}
-        </p>
-      </div>
-      <div class="grid grid-cols-12 gap-4 items-stretch mt-10">
-        {projects.map((project, i) => {
-          const { col, wide } = getBento(i);
-          return (
-            <div
-              class={`col-span-12 md:${col} card-reveal h-full`}
-              style={`--delay: ${Math.min(i * 80, 480)}ms`}
-            >
-              <ProjectCard project={project} isLatest={i === 0} lang={lang} />
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  </section>
+  <ProjectsPage lang={lang} />
 </BaseLayout>
-
-<style>
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .page-fade {
-    opacity: 0;
-    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  .card-reveal {
-    opacity: 0;
-    animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    animation-delay: var(--delay, 0ms);
-  }
-</style>
