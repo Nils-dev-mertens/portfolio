@@ -1,5 +1,7 @@
 ---
-import nilsPhoto from '../public/images/1732207667226.jpg';
+import nilsPhoto1 from '../public/images/1732207667226.jpg';
+import nilsPhoto2 from '../public/images/file_00000000b9287246ab5a6e2981f57770.png';
+import nilsPhoto3 from '../public/images/WIN_20250831_01_33_17_Pro.jpg';
 import { t, type Lang } from '@portfolio/data';
 import { getLang } from '../lib/i18n';
 
@@ -18,7 +20,7 @@ const { lang = getLang(Astro.currentLocale) } = Astro.props;
       <div class="mosaic-idle">
         <div class="mosaic-fan">
           <button class="mosaic-card mosaic-card-left" type="button" aria-label={t(lang, 'hero.mosaic.previous')}>
-            <img src={nilsPhoto.src} alt="" class="mosaic-image mosaic-image-left" />
+            <img src={nilsPhoto1.src} alt="" class="mosaic-image mosaic-image-left" />
           </button>
         </div>
       </div>
@@ -28,7 +30,7 @@ const { lang = getLang(Astro.currentLocale) } = Astro.props;
       <div class="mosaic-idle">
         <div class="mosaic-fan">
           <button class="mosaic-card mosaic-card-center" type="button" aria-label={t(lang, 'hero.mosaic.open')}>
-            <img src={nilsPhoto.src} alt="Nils Mertens" class="mosaic-image mosaic-image-center" />
+            <img src={nilsPhoto2.src} alt="Nils Mertens" class="mosaic-image mosaic-image-center" />
           </button>
         </div>
       </div>
@@ -38,7 +40,7 @@ const { lang = getLang(Astro.currentLocale) } = Astro.props;
       <div class="mosaic-idle">
         <div class="mosaic-fan">
           <button class="mosaic-card mosaic-card-right" type="button" aria-label={t(lang, 'hero.mosaic.next')}>
-            <img src={nilsPhoto.src} alt="" class="mosaic-image mosaic-image-right" />
+            <img src={nilsPhoto3.src} alt="" class="mosaic-image mosaic-image-right" />
           </button>
         </div>
       </div>
