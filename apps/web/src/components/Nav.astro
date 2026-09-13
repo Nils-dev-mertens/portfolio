@@ -17,6 +17,7 @@ const links = [
 const otherLang: Lang = lang === 'en' ? 'nl' : 'en';
 const switchHref = swapLocale(current, otherLang);
 const switchLabel = otherLang === 'en' ? 'EN' : 'NL';
+const mobileMenuLabel = lang === 'en' ? 'Open navigation' : 'Navigatie openen';
 ---
 
 <header class="sticky top-0 z-50 bg-background border-b border-border">
@@ -24,7 +25,8 @@ const switchLabel = otherLang === 'en' ? 'EN' : 'NL';
     <a href={links[0].href} class="text-xl font-bold text-primary">
       NM<span class="text-pink">.</span>
     </a>
-    <nav class="flex items-center gap-6">
+
+    <nav class="hidden md:flex items-center gap-6" aria-label="Primary navigation">
       <ul class="flex gap-8 list-none">
         {links.map((link) => (
           <li>
@@ -52,5 +54,88 @@ const switchLabel = otherLang === 'en' ? 'EN' : 'NL';
         {switchLabel}
       </a>
     </nav>
+
+    <details class="group relative z-[60] md:hidden">
+      <summary
+        class="relative z-[70] flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden"
+        aria-label={mobileMenuLabel}
+        aria-controls="mobile-navigation"
+      >
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </summary>
+      <nav
+        id="mobile-navigation"
+        class="fixed inset-0 z-50 flex min-h-screen items-center justify-center bg-background px-8 py-24"
+        aria-label="Mobile navigation"
+      >
+        <ul class="flex w-full max-w-sm flex-col items-center gap-6 list-none text-center">
+          {links.map((link, index) => (
+            <li class="mobile-nav-link" style={`--nav-delay: ${index * 80}ms`}>
+              <a
+                href={link.href}
+                class:list={[
+                  'block px-4 py-2 text-3xl font-bold tracking-tight transition-colors duration-150 sm:text-4xl',
+                  current === link.href
+                    ? 'text-primary'
+                    : 'text-foreground hover:text-primary',
+                ]}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+          <li class="mobile-nav-link mt-4 border-t border-border pt-6" style={`--nav-delay: ${links.length * 80}ms`}>
+            <a
+              href={switchHref}
+              rel="alternate"
+              hreflang={otherLang}
+              class="block px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] text-foreground/60 transition-colors duration-150 hover:text-primary"
+              aria-label={otherLang === 'en' ? 'Switch to English' : 'Schakel naar Nederlands'}
+            >
+              {switchLabel}
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </details>
   </div>
 </header>
+
+<style>
+  @keyframes mobile-nav-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mobile-nav-link {
+    opacity: 0;
+  }
+
+  details[open] .mobile-nav-link {
+    animation: mobile-nav-fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: var(--nav-delay);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    details[open] .mobile-nav-link {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>
