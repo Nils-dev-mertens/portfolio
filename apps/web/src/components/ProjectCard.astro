@@ -1,15 +1,24 @@
 ---
-import { type Project, type ProjectCategory, t, type Lang } from '@portfolio/data';
+import { type Article, type Project, type ProjectCategory, t, type Lang } from '@portfolio/data';
 import { getLang } from '../lib/i18n';
+import { articleHref } from '../lib/articles';
 
 interface Props {
   project: Project;
   wide?: boolean;
   isLatest?: boolean;
   lang?: Lang;
+  /** The project's published write-up, when it has one. */
+  article?: Article;
 }
 
-const { project, wide = false, isLatest = false, lang = getLang(Astro.currentLocale) } = Astro.props;
+const {
+  project,
+  wide = false,
+  isLatest = false,
+  lang = getLang(Astro.currentLocale),
+  article,
+} = Astro.props;
 
 /**
  * Every category carries its own accent colour and its own marker, so a card
@@ -28,8 +37,9 @@ const CATEGORY_META: Record<ProjectCategory, { labelKey: string; accent: string;
 
 const meta = CATEGORY_META[project.category] ?? CATEGORY_META.other;
 const year = project.created_at.slice(0, 4);
-const hasActions = Boolean(project.url || project.repo_url);
+const hasActions = Boolean(project.url || project.repo_url || article);
 const titleHref = project.url ?? project.repo_url;
+const writeUpHref = article ? articleHref(article, lang) : undefined;
 ---
 
 <article
@@ -100,6 +110,18 @@ const titleHref = project.url ?? project.repo_url;
 
   {hasActions && (
     <div class="card-actions">
+      {writeUpHref && (
+        <a href={writeUpHref} class="card-btn card-btn-article">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          {t(lang, 'projects.readArticle')}
+        </a>
+      )}
+
       {project.url && (
         <a
           href={project.url}
@@ -216,6 +238,19 @@ const titleHref = project.url ?? project.repo_url;
   .card-btn-primary:hover {
     background-color: color-mix(in srgb, var(--accent) 28%, transparent);
     border-color: var(--accent);
+  }
+
+  /* The write-up sits a layer deeper than the project itself, so it gets the
+     pink treatment instead of the category accent. */
+  .card-btn-article {
+    color: var(--color-pink, #d85fa3);
+    background-color: color-mix(in srgb, var(--color-pink, #d85fa3) 15%, transparent);
+    border-color: color-mix(in srgb, var(--color-pink, #d85fa3) 45%, transparent);
+  }
+
+  .card-btn-article:hover {
+    background-color: color-mix(in srgb, var(--color-pink, #d85fa3) 26%, transparent);
+    border-color: var(--color-pink, #d85fa3);
   }
 
   .card-btn-ghost {

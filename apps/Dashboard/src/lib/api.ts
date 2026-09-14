@@ -44,6 +44,49 @@ export type Project = {
   created_at: string;
 };
 
+export type ArticleStatus = 'draft' | 'published';
+export type BodyLang = 'nl' | 'en';
+
+export type Article = {
+  id: string;
+  slug: string;
+  title: string;
+  title_en: string;
+  summary: string;
+  summary_en: string;
+  project_id: string | null;
+  status: ArticleStatus;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string | null;
+  /** Whether a body file exists for this article, in either language. */
+  has_body: boolean;
+};
+
+/** The markdown body of one language, as returned by the API. */
+export type ArticleBody = {
+  lang: BodyLang;
+  body: string;
+};
+
+/** An uploaded image, with the URL to reference it by in markdown. */
+export type ArticleImage = {
+  id: string;
+  url: string;
+  filename: string;
+  mime: string;
+  byte_size: number;
+};
+
+/** Only the metadata is editable here — the body is a file in the repo. */
+export type ArticleInput = {
+  title: string;
+  summary?: string;
+  slug?: string;
+  project_id?: string | null;
+  status?: ArticleStatus;
+};
+
 export type WorkExperience = {
   id: string;
   company: string;
@@ -108,6 +151,62 @@ export const projectsApi = {
   update: (id: string, body: Partial<Omit<Project, 'id' | 'created_at'>>) =>
     request<Project>(`/api/projects/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   delete: (id: string) => request<{ success: boolean }>(`/api/projects/${id}`, { method: 'DELETE' }),
+};
+
+// ── Articles ─────────────────────────────────────────────────────────────────
+
+export const articlesApi = {
+  list: (params?: { project_id?: string; status?: ArticleStatus; limit?: number }) => {
+    const q = new URLSearchParams();
+    if (params?.project_id) q.set('project_id', params.project_id);
+    if (params?.status) q.set('status', params.status);
+    if (params?.limit) q.set('limit', String(params.limit));
+    return request<Article[]>(`/api/articles?${q}`);
+  },
+  get: (id: string) => request<Article>(`/api/articles/${id}`),
+  create: (body: ArticleInput) =>
+    request<Article>('/api/articles', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id: string, body: Partial<ArticleInput>) =>
+    request<Article>(`/api/articles/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id: string) =>
+    request<{ success: boolean }>(`/api/articles/${id}`, { method: 'DELETE' }),
+  // The body is a column on the article, edited per language.
+  getBody: (id: string, lang: BodyLang = 'nl') =>
+    request<ArticleBody>(`/api/articles/${id}/body?lang=${lang}`),
+  saveBody: (id: string, lang: BodyLang, body: string) =>
+    request<{ lang: BodyLang; body: string; bytes: number }>(
+      `/api/articles/${id}/body?lang=${lang}`,
+      { method: 'PUT', body: JSON.stringify({ body }) },
+    ),
+  preview: (body: string) =>
+    request<{ html: string }>('/api/articles/preview', {
+      method: 'POST',
+      body: JSON.stringify({ body }),
+    }),
+  // Uploads need their own fetch: the shared helper sets a JSON content type,
+  // which would break the multipart boundary.
+  uploadImage: async (articleId: string, file: File): Promise<ArticleImage> => {
+    const form = new FormData();
+    form.append('file', file);
+
+    const token = auth.getToken();
+    const res = await fetch(`/api/articles/${articleId}/images`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: form,
+    });
+
+    if (res.status === 401) {
+      auth.clearToken();
+      window.dispatchEvent(new CustomEvent('auth:expired'));
+      throw new Error('Session expired');
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error((err as { error: string }).error ?? res.statusText);
+    }
+    return res.json() as Promise<ArticleImage>;
+  },
 };
 
 // ── Work Experience ───────────────────────────────────────────────────────────

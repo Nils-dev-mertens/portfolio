@@ -122,6 +122,225 @@
   animation: blink 1s step-end infinite;
 }
 
+/*
+ * Article prose. Compiled markdown/MDX is rendered by `<ArticleBody />` and is
+ * NOT part of that component's style scope, so the typography has to live here.
+ */
+.article-body {
+  margin-top: 2.5rem;
+  color: color-mix(in srgb, var(--foreground) 88%, transparent);
+  /* The column is as wide as the nav, so the text is set a little larger to
+     keep the line length workable. */
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.article-body > :first-child {
+  margin-top: 0;
+}
+
+.article-body > * + * {
+  margin-top: 1.25rem;
+}
+
+/*
+ * Section headings. Every `#` / `##` opens a new section with a hairline above
+ * it and a marker, so a long article keeps an obvious rhythm; every `###` sits
+ * inside one with a pink bar. `scroll-margin-top` clears the sticky nav,
+ * otherwise an index link would land with the heading hidden behind it.
+ */
+.article-body h1,
+.article-body h2,
+.article-body h3,
+.article-body h4,
+.article-body h5,
+.article-body h6 {
+  position: relative;
+  scroll-margin-top: 5.5rem;
+  color: var(--primary);
+  line-height: 1.25;
+}
+
+.article-body h1 {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.article-body h1::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 3.5rem;
+  height: 2px;
+  background-color: var(--color-pink);
+}
+
+.article-body h2 {
+  margin-top: 4rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--border);
+  font-size: clamp(1.9rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.article-body h2::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 3.5rem;
+  height: 2px;
+  background-color: var(--color-pink);
+}
+
+.article-body h3 {
+  margin-top: 2.75rem;
+  padding-left: 1rem;
+  border-left: 3px solid color-mix(in srgb, var(--color-pink) 50%, transparent);
+  font-size: clamp(1.4rem, 3vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.article-body h4 {
+  margin-top: 2.25rem;
+  padding-left: 1rem;
+  border-left: 3px solid color-mix(in srgb, var(--color-pink) 35%, transparent);
+  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.article-body h5 {
+  margin-top: 2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  opacity: 0.9;
+}
+
+.article-body h6 {
+  margin-top: 1.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* The `#` is added to every heading by `renderMarkdown`. It waits in the
+   container's padding until you hover the heading. */
+.article-body .heading-anchor {
+  position: absolute;
+  left: -1.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.7em;
+  font-weight: 400;
+  color: var(--color-pink);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+
+.article-body h1:hover .heading-anchor,
+.article-body h2:hover .heading-anchor,
+.article-body h3:hover .heading-anchor,
+.article-body h4:hover .heading-anchor,
+.article-body h5:hover .heading-anchor,
+.article-body h6:hover .heading-anchor,
+.article-body .heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+.article-body .heading-anchor:hover {
+  color: var(--primary);
+}
+
+.article-body a {
+  color: var(--color-pink);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-pink) 40%, transparent);
+  text-underline-offset: 3px;
+}
+
+.article-body a:hover {
+  text-decoration-color: var(--color-pink);
+}
+
+.article-body strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.article-body ul,
+.article-body ol {
+  padding-left: 1.4rem;
+}
+
+.article-body ul {
+  list-style: disc;
+}
+
+.article-body ol {
+  list-style: decimal;
+}
+
+.article-body li + li {
+  margin-top: 0.4rem;
+}
+
+.article-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  color: var(--color-pink);
+  background-color: rgb(255 255 255 / 0.06);
+  border-radius: 0.3rem;
+  padding: 0.1rem 0.35rem;
+}
+
+.article-body pre {
+  overflow-x: auto;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.4);
+  background-color: var(--card);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.article-body pre code {
+  padding: 0;
+  background: none;
+  color: color-mix(in srgb, var(--foreground) 92%, transparent);
+}
+
+.article-body blockquote {
+  border-left: 2px solid color-mix(in srgb, var(--color-pink) 45%, transparent);
+  padding-left: 1rem;
+  font-style: italic;
+  color: color-mix(in srgb, var(--foreground) 75%, transparent);
+}
+
+.article-body hr {
+  border-color: var(--border);
+}
+
+.article-body img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.4);
+}
+
 /* Layout */
 .container {
   max-width: var(--max-width);

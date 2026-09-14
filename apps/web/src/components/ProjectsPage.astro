@@ -1,5 +1,6 @@
 ---
 import { getProjects, t, type Lang } from '@portfolio/data';
+import { articlesByProject } from '../lib/articles';
 import SectionHeader from './SectionHeader.astro';
 import ProjectCard from './ProjectCard.astro';
 
@@ -10,6 +11,7 @@ interface Props {
 const { lang } = Astro.props;
 
 const projects = getProjects({}, lang);
+const articleByProject = articlesByProject(lang);
 
 // 10-card bento cycle — 4 distinct row shapes before repeating:
 // Row A [7][5]  →  Row B [3][4][5]  →  Row C [5][7]  →  Row D [4][4][4]
@@ -52,7 +54,13 @@ const bentoPattern: Array<{ col: string; wide: boolean }> = [
               class={`col-span-12 ${col} card-reveal h-full`}
               style={`--delay: ${Math.min(i * 80, 480)}ms`}
             >
-              <ProjectCard project={project} wide={wide} isLatest={i === 0} lang={lang} />
+              <ProjectCard
+                project={project}
+                wide={wide}
+                isLatest={i === 0}
+                lang={lang}
+                article={articleByProject.get(project.id)}
+              />
             </div>
           );
         })}

@@ -1,0 +1,22 @@
+---
+import { getArticleBySlug, type Lang } from '@portfolio/data';
+import { getLang } from '../../lib/i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleView from '../../components/ArticleView.astro';
+
+const lang = getLang(Astro.currentLocale) as Lang;
+const slug = Astro.params.slug ?? '';
+
+// Drafts are only visible in the dashboard: the public route answers 404.
+const article = getArticleBySlug(slug, lang);
+if (!article || article.status !== 'published') Astro.response.status = 404;
+
+const title = article && article.status === 'published' ? article.title : 'Artikel niet gevonden';
+---
+
+<BaseLayout
+  title={`${title} — Nils Mertens`}
+  description={article && article.status === 'published' ? article.summary : undefined}
+>
+  <ArticleView article={article} lang={lang} />
+</BaseLayout>

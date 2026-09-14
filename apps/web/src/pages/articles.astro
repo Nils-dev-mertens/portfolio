@@ -1,0 +1,17 @@
+---
+import { type Lang } from '@portfolio/data';
+import { getLang } from '../lib/i18n';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticlesPage from '../components/ArticlesPage.astro';
+
+const lang = getLang(Astro.currentLocale) as Lang;
+---
+
+<BaseLayout
+  title={lang === 'en' ? 'Articles — Nils Mertens' : 'Artikelen — Nils Mertens'}
+  description={lang === 'en'
+    ? 'Longer write-ups by Nils Mertens about the projects he builds: pipelines, testing, tooling and the choices behind them.'
+    : 'Langere stukken van Nils Mertens over de projecten die hij bouwt: pipelines, testing, tooling en de keuzes erachter.'}
+>
+  <ArticlesPage lang={lang} />
+</BaseLayout>

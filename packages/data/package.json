@@ -16,6 +16,7 @@
     "translate": "DB_PATH=../../apps/web/portfolio.db bun src/jobs/translate.ts"
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^6",
     "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
