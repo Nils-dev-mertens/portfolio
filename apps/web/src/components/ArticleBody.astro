@@ -1,0 +1,115 @@
+---
+import { renderMarkdown, t, type Article, type Lang } from '@portfolio/data';
+import ArticleToc from './ArticleToc.astro';
+
+interface Props {
+  article: Article;
+  lang: Lang;
+}
+
+const { article, lang } = Astro.props;
+
+/**
+ * The body is a database column, rendered on the server with the same markdown
+ * pipeline the dashboard preview uses. `article.body` is already localised by
+ * the query layer, so when the English column is still empty the reader gets
+ * the Dutch text plus a note saying so.
+ */
+const hasBody = article.body.trim().length > 0;
+const untranslated = lang === 'en' && hasBody && article.body_en.trim() === '';
+const { html, headings } = hasBody
+  ? await renderMarkdown(article.body)
+  : { html: '', headings: [] };
+
+// One heading is not an index — needs at least two titles to be useful.
+const showToc = headings.length > 1;
+---
+
+{
+  hasBody ? (
+    <>
+      {untranslated && (
+        <p class="article-note article-untranslated" role="note">
+          {t(lang, 'articles.untranslated')}
+        </p>
+      )}
+      <div class:list={['article-layout', showToc && 'has-toc']}>
+        {showToc && (
+          <aside class="article-toc-wrap">
+            <ArticleToc headings={headings} lang={lang} />
+          </aside>
+        )}
+
+        <div class="article-main">
+          <div class="article-body">
+            <Fragment set:html={html} />
+          </div>
+        </div>
+      </div>
+    </>
+  ) : (
+    <p class="article-note">{t(lang, 'articles.noBody')}</p>
+  )
+}
+
+<style>
+  /* The prose itself is styled globally in global.css — the rendered markdown
+     is not part of this component's scope. */
+  .article-note {
+    padding: 0.85rem 1rem;
+    border: 1px dashed color-mix(in srgb, var(--color-pink) 40%, transparent);
+    border-radius: calc(var(--radius) * 1.4);
+    background-color: color-mix(in srgb, var(--color-pink) 8%, transparent);
+    color: var(--foreground);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .article-untranslated {
+    margin-top: 2.5rem;
+  }
+
+  /* When the untranslated banner sits above the grid, the grid needs less gap. */
+  .article-untranslated + .article-layout {
+    margin-top: 1.5rem;
+  }
+
+  .article-layout {
+    margin-top: 2.5rem;
+  }
+
+  /* When a TOC exists on mobile it sits above the prose. */
+  .article-layout.has-toc .article-toc-wrap {
+    margin-bottom: 2.5rem;
+  }
+
+  .article-layout.has-toc .article-main .article-body {
+    margin-top: 0;
+  }
+
+  /* On desktop the index floats next to the article and sticks while you read. */
+  @media (min-width: 1100px) {
+    .article-layout.has-toc {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .article-layout.has-toc .article-toc-wrap {
+      order: 2;
+      position: sticky;
+      top: 6rem; /* sticky nav (4rem) + breathing room */
+      max-height: calc(100vh - 7rem);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--border) 80%, transparent) transparent;
+      margin-bottom: 0;
+    }
+
+    .article-layout.has-toc .article-main {
+      order: 1;
+      min-width: 0;
+    }
+  }
+</style>

@@ -1,0 +1,73 @@
+---
+import { t, type Article, type Lang } from '@portfolio/data';
+import { articleHref } from '../lib/articles';
+
+interface Props {
+  article: Article;
+  lang: Lang;
+  projectTitle?: string;
+}
+
+const { article, lang, projectTitle } = Astro.props;
+
+const href = articleHref(article, lang);
+const date = (article.published_at ?? article.created_at).slice(0, 10);
+---
+
+<a href={href} class="article-card group" aria-labelledby={`article-${article.slug}`}>
+  <div class="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.08em]">
+    <time datetime={article.published_at ?? article.created_at} class="text-muted-foreground tabular-nums">
+      {date}
+    </time>
+    {projectTitle && <span class="text-pink truncate">▸ {projectTitle}</span>}
+  </div>
+
+  <h2 id={`article-${article.slug}`} class="mt-3 text-xl font-bold leading-tight text-primary md:text-2xl">
+    {article.title}
+  </h2>
+
+  {article.summary && (
+    <p class="mt-2 text-sm leading-relaxed text-foreground/80 md:text-[15px]">{article.summary}</p>
+  )}
+
+  <span class="read-more mt-4 text-[11px] font-medium uppercase tracking-[0.08em]">
+    {t(lang, 'articles.readArticle')} →
+  </span>
+</a>
+
+<style>
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border);
+    border-left: 2px solid color-mix(in srgb, var(--color-pink) 55%, transparent);
+    border-radius: calc(var(--radius) * 1.4);
+    background-color: var(--card);
+    transition:
+      transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .article-card:hover {
+    transform: translateY(-3px);
+    border-left-color: var(--color-pink);
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--color-pink) 12%, transparent);
+  }
+
+  .read-more {
+    margin-top: auto;
+    color: var(--color-pink);
+  }
+
+  .article-card:hover .read-more {
+    color: var(--primary);
+  }
+
+  .article-card:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+</style>

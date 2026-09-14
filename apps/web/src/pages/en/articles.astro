@@ -1,0 +1,14 @@
+---
+import { type Lang } from '@portfolio/data';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticlesPage from '../../components/ArticlesPage.astro';
+
+const lang = 'en' as Lang;
+---
+
+<BaseLayout
+  title="Articles — Nils Mertens"
+  description="Longer write-ups by Nils Mertens about the projects he builds: pipelines, testing, tooling and the choices behind them."
+>
+  <ArticlesPage lang={lang} />
+</BaseLayout>

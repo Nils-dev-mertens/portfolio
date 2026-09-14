@@ -1,8 +1,11 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, blob } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 export const PROJECT_CATEGORIES = ['website', 'cli', 'api', 'library', 'tool', 'other'] as const;
 export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
+
+export const ARTICLE_STATUSES = ['draft', 'published'] as const;
+export type ArticleStatus = (typeof ARTICLE_STATUSES)[number];
 
 export const projects = sqliteTable('projects', {
   id: text('id').primaryKey(),
@@ -15,6 +18,50 @@ export const projects = sqliteTable('projects', {
   url: text('url'),
   repo_url: text('repo_url'),
   featured: integer('featured', { mode: 'boolean' }).notNull().default(false),
+  created_at: text('created_at').notNull().default(sql`(datetime('now'))`),
+});
+
+/**
+ * Articles are the long-form counterpart of a project: an explainer, a
+ * post-mortem or an opinion piece.
+ *
+ * Like every other piece of content on the site, an article is a row — title,
+ * summary and the markdown body, each with its `_en` companion column that the
+ * DeepL job fills. Pages read them with the same query helpers as projects and
+ * render on the server, so the article list and article pages are plain
+ * server-rendered pages.
+ */
+export const articles = sqliteTable('articles', {
+  id: text('id').primaryKey(),
+  slug: text('slug').notNull().unique(),
+  title: text('title').notNull(),
+  title_en: text('title_en').notNull().default(''),
+  summary: text('summary').notNull().default(''),
+  summary_en: text('summary_en').notNull().default(''),
+  /** Markdown. Rendered by `renderMarkdown` from this package. */
+  body: text('body').notNull().default(''),
+  body_en: text('body_en').notNull().default(''),
+  project_id: text('project_id'),
+  status: text('status').$type<ArticleStatus>().notNull().default('draft'),
+  published_at: text('published_at'),
+  created_at: text('created_at').notNull().default(sql`(datetime('now'))`),
+  updated_at: text('updated_at'),
+});
+
+/**
+ * Images embedded in an article body. They are stored in the database rather
+ * than on disk so that uploading one works on a running site: files on disk
+ * would only appear after a rebuild, which is exactly what putting the bodies
+ * in the database was meant to avoid. The API serves them from
+ * `/api/articles/images/:id` with immutable caching.
+ */
+export const article_images = sqliteTable('article_images', {
+  id: text('id').primaryKey(),
+  article_id: text('article_id').notNull(),
+  filename: text('filename').notNull(),
+  mime: text('mime').notNull(),
+  byte_size: integer('byte_size').notNull(),
+  data: blob('data', { mode: 'buffer' }).notNull(),
   created_at: text('created_at').notNull().default(sql`(datetime('now'))`),
 });
 

@@ -1,0 +1,101 @@
+---
+import { t, type Lang } from '@portfolio/data';
+import type { MarkdownHeading } from '@portfolio/data';
+
+interface Props {
+  headings: MarkdownHeading[];
+  lang: Lang;
+}
+
+const { headings, lang } = Astro.props;
+
+// Render a flat, depth-indented index. h1 flush left, h2 one step in, h3 two, etc.
+// Keep the original order — nesting is expressed only by indentation, not by
+// restructuring, so a h3 that directly follows a h1 is visibly deeper without
+// inventing a fake h2 parent.
+const items = headings.filter((heading) => heading.depth >= 1 && heading.depth <= 6);
+---
+
+<nav class="article-toc" aria-label={t(lang, 'articles.toc.aria')}>
+  <p class="toc-label">{t(lang, 'articles.toc')}</p>
+
+  <ol class="toc-list">
+    {
+      items.map((heading) => (
+        <li class="toc-item" style={`--depth: ${heading.depth}`}>
+          <a href={`#${heading.slug}`} class="toc-link">
+            {heading.text}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .article-toc {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .toc-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-pink);
+    margin-bottom: 0.75rem;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Depth indentation in the index: h1 at 0, h2 one step in, h3 two, … */
+  .toc-item {
+    --indent: calc((var(--depth) - 1) * 0.95rem);
+    padding-left: var(--indent);
+  }
+
+  .toc-item + .toc-item {
+    margin-top: 0.4rem;
+  }
+
+  /* A subtle guide line for nested levels so the indentation reads as hierarchy */
+  .toc-item[style*='--depth: 2'] .toc-link,
+  .toc-item[style*='--depth: 3'] .toc-link,
+  .toc-item[style*='--depth: 4'] .toc-link,
+  .toc-item[style*='--depth: 5'] .toc-link,
+  .toc-item[style*='--depth: 6'] .toc-link {
+    border-left: 1px solid var(--border);
+    padding-left: 0.6rem;
+    margin-left: -0.6rem;
+  }
+
+  .toc-link {
+    display: inline;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--muted-foreground);
+    transition: color 150ms ease;
+  }
+
+  .toc-link:hover {
+    color: var(--foreground);
+  }
+
+  /* h1 entries are the top level — slightly stronger */
+  .toc-item[style*='--depth: 1'] .toc-link {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .toc-item[style*='--depth: 1'] .toc-link:hover {
+    color: var(--primary);
+  }
+</style>

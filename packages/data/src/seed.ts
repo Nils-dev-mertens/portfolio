@@ -1,5 +1,13 @@
 import { getDb } from './db';
-import { projects, work_experience, education, about, skill_categories, skills } from './db/schema';
+import {
+  projects,
+  articles,
+  work_experience,
+  education,
+  about,
+  skill_categories,
+  skills,
+} from './db/schema';
 
 const data: (typeof projects.$inferInsert)[] = [
   {
@@ -61,6 +69,162 @@ const data: (typeof projects.$inferInsert)[] = [
     repo_url: 'https://github.com/Nils-Dev-Mertens/vue-dashboard',
     featured: false,
     created_at: '2025-01-01T00:00:00',
+  },
+];
+
+/**
+ * Articles are rows like every other piece of content. `astro-server-islands`
+ * is deliberately left as a draft without a body: that is the state an article
+ * created from the dashboard starts in. `playwright-page-object` has no English
+ * body so the site keeps showing the Dutch one until DeepL fills it in.
+ */
+const DOCKER_PIPELINE_BODY = `Deze site draait niet op Vercel of Netlify, maar op een VPS die ik zelf beheer. Dat betekent dat ik ook mijn eigen deploy-pipeline moest bouwen. In dit artikel leg ik uit hoe die eruitziet, en waarom er geen stap in zit die ik handmatig doe.
+
+## Wat de pipeline moet doen
+
+De eisen waren simpel: een push naar \`master\` moet binnen een paar minuten live staan, en als er iets stuk is mag er niets uitgerold worden. Verder wil ik kunnen terugkeren naar een vorige versie zonder eerst een git-revert te moeten schrijven.
+
+De volgorde waarin dat gebeurt is belangrijker dan de stappen zelf:
+
+1. **install** — Bun installeert de workspace dependencies. De lockfile is de bron van waarheid, dus een afwijkende versie laat de build meteen falen.
+2. **check** — TypeScript controleert alle drie de apps tegelijk via Turborepo. Mislukt dit, dan stopt de pipeline hier, nog voor er iets gebouwd wordt.
+3. **test** — De testsuite draait tegen een in-memory SQLite database, zodat hij nooit afhankelijk is van de staat van de echte database.
+4. **ship** — Alleen als alles groen is worden de images gebouwd en naar de VPS gepusht. Daar start Docker Compose de nieuwe containers op.
+
+## Waarom Turborepo
+
+Alle builds lopen via Turborepo. Dat klinkt als extra gereedschap voor een klein project, maar het levert één concreet voordeel op: caching. De web-app, de API en het dashboard bouwen onafhankelijk van elkaar, dus een wijziging in alleen het dashboard herbouwt de rest niet opnieuw.
+
+\`\`\`bash
+bun run build          # wat de CI ook draait
+turbo run build --dry  # wat er gecached is
+\`\`\`
+
+## Rollen terug zonder drama
+
+De images worden getagd met de commit-hash én met \`latest\`. De VPS trekt alleen \`latest\`, maar de vorige hash blijft lokaal staan. Terugrollen is dan letterlijk een kwestie van de oude tag opnieuw starten:
+
+\`\`\`bash
+docker compose up -d api@sha-4f2c9a1
+\`\`\`
+
+Geen git-revert, geen nieuwe build, geen downtime van meer dan een paar seconden.
+
+## Wat ik de volgende keer anders doe
+
+De grootste fout die ik maakte was de database in dezelfde stap migreren als de code uitrollen. Als de nieuwe versie terugrolt, is je migratie dat niet. Sindsdien draaien migraties als aparte stap vóór het uitrollen, en zijn ze altijd backwards-compatible.`;
+
+const DOCKER_PIPELINE_BODY_EN = `This site does not run on Vercel or Netlify — it runs on a VPS I manage myself. That also meant building my own deploy pipeline. Here is what it looks like, and why none of it needs a manual step.
+
+## What the pipeline has to do
+
+The requirements were simple: a push to \`master\` should be live within a few minutes, and nothing gets deployed if something is broken. I also want to roll back to a previous version without writing a git revert first.
+
+The order these things happen in matters more than the steps themselves:
+
+1. **install** — Bun installs the workspace dependencies. The lockfile is the source of truth, so a mismatched version fails the build immediately.
+2. **check** — TypeScript checks all three apps at once through Turborepo. If that fails the pipeline stops here, before anything gets built.
+3. **test** — The test suite runs against an in-memory SQLite database, so it never depends on the state of the real database.
+4. **ship** — Only when everything is green are the images built and pushed to the VPS, where Docker Compose starts the new containers.
+
+## Why Turborepo
+
+Every build goes through Turborepo. That sounds like heavy machinery for a small project, but it buys one concrete thing: caching. The web app, the API and the dashboard build independently, so a change confined to the dashboard does not rebuild the rest.
+
+\`\`\`bash
+bun run build          # what CI runs too
+turbo run build --dry  # what is cached
+\`\`\`
+
+## Rolling back without drama
+
+Images are tagged with the commit hash and with \`latest\`. The VPS only pulls \`latest\`, but the previous hash stays on disk. Rolling back is then a matter of starting the old tag again:
+
+\`\`\`bash
+docker compose up -d api@sha-4f2c9a1
+\`\`\`
+
+No git revert, no rebuild, and no downtime beyond a few seconds.
+
+## What I would do differently next time
+
+My biggest mistake was migrating the database in the same step that shipped the code. If the new version rolls back, your migration does not. Since then migrations run as a separate step before the deploy, and they are always backwards-compatible.`;
+
+const PLAYWRIGHT_BODY = `Page objects zijn geen nieuw idee, maar ze worden vaak verkeerd gebruikt: als een dun laagje om een selector heen. Dan schrijf je nog steeds dezelfde selector op tien plaatsen, alleen met een andere naam. Ik gebruik ze daarom voor iets anders: het afbakenen van de pagina zelf.
+
+## Het probleem met losse selectors
+
+Een test die rechtstreeks op de DOM werkt, breekt op het moment dat de opmaak verandert. Dat is niet erg als het om één test gaat. Het wordt pas een probleem als twintig tests allemaal dezelfde knop zoeken:
+
+\`\`\`ts
+await page.getByRole('button', { name: 'Opslaan' }).click();
+\`\`\`
+
+Zodra die knop een andere naam krijgt, is het zoeken in twintig bestanden.
+
+## Wat een page object bij mij wel doet
+
+Een page object beschrijft wat een pagina *is*, niet wat een test *doet*:
+
+\`\`\`ts
+export class ProjectPage {
+  readonly saveButton = this.page.getByRole('button', { name: 'Opslaan' });
+
+  constructor(private readonly page: Page) {}
+
+  async open(slug: string) {
+    await this.page.goto(\`/projects/\${slug}\`);
+  }
+}
+\`\`\`
+
+De test leest daardoor als een beschrijving van gedrag, en de selector staat op precies één plek. Verandert de knop, dan verandert er één regel.
+
+## Waar ik de grens trek
+
+Page objects horen geen assertions te bevatten. Zodra een page object gaat bepalen wat "goed" is, verhuist de logica uit je tests naar een laag die niemand meer leest. Assertions blijven in de test; het page object weet alleen hoe de pagina in elkaar zit.`;
+
+const articleData: (typeof articles.$inferInsert)[] = [
+  {
+    id: 'a1f0c3d4-5b6e-4a70-9c81-0d2e3f4a5b60',
+    slug: 'docker-home-server-pipeline',
+    title: 'Van push naar productie: hoe mijn deploy-pipeline werkt',
+    title_en: 'From push to production: how my deploy pipeline works',
+    summary:
+      'Een blik op de GitHub Actions pipeline die deze site bouwt, test en uitrolt op mijn eigen VPS — zonder cloudprovider en zonder handmatige stappen.',
+    summary_en:
+      'A look at the GitHub Actions pipeline that builds, tests and ships this site to my own VPS — no cloud provider, no manual steps.',
+    body: DOCKER_PIPELINE_BODY,
+    body_en: DOCKER_PIPELINE_BODY_EN,
+    project_id: 'docker-home-server',
+    status: 'published',
+    published_at: '2025-07-08T09:00:00',
+    created_at: '2025-07-08T09:00:00',
+    updated_at: '2025-07-12T10:30:00',
+  },
+  {
+    id: 'b2e1d4c5-6c7f-4b81-8d92-1e3f4a5b6c71',
+    slug: 'playwright-page-object',
+    title: 'Waarom ik mijn Playwright tests in page objects opdeel',
+    summary:
+      'Over selectors die op één plek staan, tests die elkaar niet meer raken en een suite die je durft uit te breiden.',
+    body: PLAYWRIGHT_BODY,
+    project_id: 'playwright-test-suite',
+    status: 'published',
+    published_at: '2025-08-20T08:15:00',
+    created_at: '2025-08-20T08:15:00',
+    updated_at: '2025-08-21T07:00:00',
+  },
+  {
+    id: 'c3d2e5f6-7d8a-4c92-9ea3-2f4a5b6c7d82',
+    slug: 'astro-server-islands',
+    title: 'Server islands: alleen dynamisch wat dynamisch moet zijn',
+    summary: 'Notities bij het herbouwen van deze site als voornamelijk statische Astro-pagina.',
+    project_id: 'portfolio-site',
+    status: 'draft',
+    published_at: null,
+    created_at: '2025-09-02T12:00:00',
+    updated_at: '2025-09-02T12:00:00',
   },
 ];
 
@@ -175,6 +339,9 @@ export function seed() {
   db.delete(projects).run();
   db.insert(projects).values(data).run();
 
+  db.delete(articles).run();
+  db.insert(articles).values(articleData).run();
+
   db.delete(work_experience).run();
   db.insert(work_experience).values(workExperienceData).run();
 
@@ -189,7 +356,13 @@ export function seed() {
   db.insert(skill_categories).values(skillCategoryData).run();
   db.insert(skills).values(skillData).run();
 
-  console.log(`Seeded ${data.length} projects, ${workExperienceData.length} work experience entries, ${educationData.length} education entries, ${skillCategoryData.length} skill categories and about data into portfolio.db`);
+  console.log(`Seeded ${data.length} projects, ${articleData.length} articles, ${workExperienceData.length} work experience entries, ${educationData.length} education entries, ${skillCategoryData.length} skill categories and about data into portfolio.db`);
+}
+
+// `bun run seed` (and `db:seed`) call this file directly. Tests import `seed`
+// instead, which is why the reset only happens when the file is the entrypoint.
+if (import.meta.main) {
+  seed();
 }
 
 /**

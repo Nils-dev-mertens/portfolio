@@ -1,0 +1,108 @@
+---
+import { getProjects, t, type Article, type Lang } from '@portfolio/data';
+import { articleHref } from '../lib/articles';
+import ArticleBody from './ArticleBody.astro';
+
+interface Props {
+  article?: Article;
+  lang: Lang;
+}
+
+const { article, lang } = Astro.props;
+
+const articlesHref = lang === 'en' ? '/en/articles' : '/articles';
+const projectsHref = lang === 'en' ? '/en/projects' : '/projects';
+
+const project =
+  article && article.project_id
+    ? getProjects({}, lang).find((candidate) => candidate.id === article.project_id)
+    : undefined;
+
+const published = article?.published_at?.slice(0, 10);
+const updated = article?.updated_at?.slice(0, 10);
+const showUpdated = Boolean(updated && updated !== published);
+---
+
+{article && article.status === 'published' ? (
+  <article class="pt-14 pb-20">
+    <div class="container">
+      <a href={articlesHref} class="back-link">
+        ← {t(lang, 'articles.back')}
+      </a>
+
+      <header class="mt-6 pb-6">
+        {published && (
+          <p class="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            <time datetime={article.published_at!} class="tabular-nums">{published}</time>
+            {showUpdated && <span class="text-foreground/40"> · {t(lang, 'articles.updated')} {updated}</span>}
+          </p>
+        )}
+
+        <h1 class="mt-4 text-[36px] font-extrabold leading-[0.9] tracking-tight text-primary md:text-[52px] lg:text-[60px]">
+          {article.title}
+        </h1>
+
+        {article.summary && (
+          <p class="article-lede mt-4">{article.summary}</p>
+        )}
+
+        {project && (
+          <a href={projectsHref} class="project-link">
+            ▸ {t(lang, 'articles.aboutProject')} {project.title}
+          </a>
+        )}
+      </header>
+
+      <ArticleBody article={article} lang={lang} />
+    </div>
+  </article>
+) : (
+  <section class="pt-14 pb-20">
+    <div class="container">
+      <a href={articlesHref} class="back-link">
+        ← {t(lang, 'articles.back')}
+      </a>
+      <h1 class="mt-6 text-[30px] font-bold leading-tight text-primary">
+        {t(lang, 'articles.missing')}
+      </h1>
+    </div>
+  </section>
+)}
+
+<style>
+  .back-link {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-foreground);
+    transition: color 150ms ease;
+  }
+
+  .back-link:hover {
+    color: var(--primary);
+  }
+
+  /* The lede sits on its own line above the rule, so it gets the accent. */
+  .article-lede {
+    max-width: 70ch;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: color-mix(in srgb, var(--foreground) 85%, transparent);
+  }
+
+  .project-link {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-pink);
+    transition: color 150ms ease;
+  }
+
+  .project-link:hover {
+    color: var(--primary);
+  }
+</style>

@@ -6,6 +6,7 @@ const messages: Record<Lang, Messages> = {
   nl: {
     'nav.home': 'Home',
     'nav.projects': 'Projecten',
+    'nav.articles': 'Artikelen',
     'nav.about': 'Over mij',
 
     'cta.viewProjects': 'Bekijk projecten',
@@ -56,6 +57,27 @@ const messages: Record<Lang, Messages> = {
     'projects.category.tool': 'Tool',
     'projects.category.other': 'Overig',
     'projects.latest': 'Nieuwste',
+    'projects.readArticle': 'Lees artikel',
+
+    'articles.page.label': 'Artikelen',
+    'articles.page.title': 'Wat ik opschrijf',
+    'articles.page.intro':
+      'Sommige dingen passen niet in een projectbeschrijving van drie regels: waarom een aanpak werkte, wat ik onderweg verkeerd deed, of gewoon een mening die ik wil uitschrijven. Dat staat hier.',
+    'articles.page.intro2':
+      'Elk artikel hoort bij een project of staat op zichzelf. Ze zijn geschreven in het Nederlands en waar mogelijk ook in het Engels vertaald.',
+    'articles.page.empty': 'Er staat nog geen artikel online. Kom binnenkort nog eens terug.',
+    'articles.readArticle': 'Lees artikel',
+    'articles.back': 'Alle artikelen',
+    'articles.published': 'Gepubliceerd',
+    'articles.updated': 'Bijgewerkt',
+    'articles.aboutProject': 'Hoort bij',
+    'articles.toc': 'Inhoud',
+    'articles.toc.aria': 'Inhoudsopgave van dit artikel',
+    'articles.untranslated':
+      'Dit artikel is nog niet naar het Engels vertaald — je leest de Nederlandse versie.',
+    'articles.noBody':
+      'Dit artikel heeft nog geen tekst. Je kan hem schrijven in het dashboard.',
+    'articles.missing': 'Dit artikel bestaat niet of is nog niet gepubliceerd.',
 
     'contact.available': 'Beschikbaar voor werk',
     'contact.ctaTitle': 'Laten we iets\nbouwen samen.',
@@ -73,6 +95,7 @@ const messages: Record<Lang, Messages> = {
   en: {
     'nav.home': 'Home',
     'nav.projects': 'Projects',
+    'nav.articles': 'Articles',
     'nav.about': 'About',
 
     'cta.viewProjects': 'View projects',
@@ -123,6 +146,27 @@ const messages: Record<Lang, Messages> = {
     'projects.category.tool': 'Tool',
     'projects.category.other': 'Other',
     'projects.latest': 'Latest',
+    'projects.readArticle': 'Read article',
+
+    'articles.page.label': 'Articles',
+    'articles.page.title': 'What I write down',
+    'articles.page.intro':
+      'Some things do not fit in a three-line project description: why an approach worked, what I got wrong along the way, or simply an opinion I wanted to write out. That is what this is for.',
+    'articles.page.intro2':
+      'Every article belongs to a project or stands on its own. They are written in Dutch and translated to English where possible.',
+    'articles.page.empty': 'No articles published yet. Check back soon.',
+    'articles.readArticle': 'Read article',
+    'articles.back': 'All articles',
+    'articles.published': 'Published',
+    'articles.updated': 'Updated',
+    'articles.aboutProject': 'Belongs to',
+    'articles.toc': 'Contents',
+    'articles.toc.aria': 'Contents of this article',
+    'articles.untranslated':
+      'This article has not been translated to English yet — you are reading the Dutch version.',
+    'articles.noBody':
+      'This article has no text yet. You can write it in the dashboard.',
+    'articles.missing': 'This article does not exist or is not published yet.',
 
     'contact.available': 'Available for work',
     'contact.ctaTitle': 'Let’s build something\ntogether.',

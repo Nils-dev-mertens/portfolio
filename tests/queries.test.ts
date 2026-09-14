@@ -3,6 +3,10 @@ import {
   seed,
   getDb,
   getProjects,
+  getArticles,
+  getArticleBySlug,
+  slugify,
+  uniqueSlug,
   getAbout,
   getWorkExperience,
   getEducation,
@@ -55,6 +59,88 @@ describe('getProjects', () => {
 
   test('respects limit', () => {
     expect(getProjects({ limit: 2 }).length).toBe(2);
+  });
+});
+
+describe('getArticles', () => {
+  test('returns every article, newest published first, drafts last', () => {
+    const rows = getArticles();
+    expect(rows.length).toBe(3);
+    expect(rows.map((a) => a.slug)).toEqual([
+      'playwright-page-object',
+      'docker-home-server-pipeline',
+      'astro-server-islands',
+    ]);
+  });
+
+  test('filters by status and by project', () => {
+    expect(getArticles({ status: 'published' }).length).toBe(2);
+    expect(getArticles({ status: 'draft' }).map((a) => a.slug)).toEqual(['astro-server-islands']);
+
+    const forProject = getArticles({ project_id: 'docker-home-server' });
+    expect(forProject.length).toBe(1);
+    expect(forProject[0].slug).toBe('docker-home-server-pipeline');
+  });
+
+  test('localizes the title and summary from the _en companion columns', () => {
+    const nl = getArticleBySlug('docker-home-server-pipeline')!;
+    const en = getArticleBySlug('docker-home-server-pipeline', 'en')!;
+
+    expect(nl.title).toBe('Van push naar productie: hoe mijn deploy-pipeline werkt');
+    expect(en.title).toBe('From push to production: how my deploy pipeline works');
+  });
+
+  test('falls back to Dutch while a translation is missing', () => {
+    const nl = getArticleBySlug('playwright-page-object')!;
+    const en = getArticleBySlug('playwright-page-object', 'en')!;
+
+    expect(nl.summary_en).toBe('');
+    expect(en.title).toBe(nl.title);
+    expect(en.summary).toBe(nl.summary);
+  });
+
+  test('returns undefined for an unknown slug', () => {
+    expect(getArticleBySlug('nope')).toBeUndefined();
+  });
+
+  test('carries the markdown body and flags which articles have one', () => {
+    const nl = getArticleBySlug('docker-home-server-pipeline')!;
+    expect(nl.has_body).toBe(true);
+    expect(nl.body).toContain('## Wat de pipeline moet doen');
+    expect(nl.body_en).toContain('## What the pipeline has to do');
+
+    // A draft an article starts as: metadata, no text yet.
+    const draft = getArticleBySlug('astro-server-islands')!;
+    expect(draft.has_body).toBe(false);
+    expect(draft.body).toBe('');
+  });
+
+  test('localizes the body, falling back to Dutch when body_en is empty', () => {
+    const nl = getArticleBySlug('playwright-page-object')!;
+    const en = getArticleBySlug('playwright-page-object', 'en')!;
+
+    expect(en.body_en).toBe('');
+    expect(en.body).toBe(nl.body);
+    // Falling back is not the same as having no text.
+    expect(en.has_body).toBe(true);
+  });
+});
+
+describe('article slugs', () => {
+  test('slugify folds accents and punctuation into dashes', () => {
+    expect(slugify('Van push naar productie: hoe werkt het?')).toBe(
+      'van-push-naar-productie-hoe-werkt-het',
+    );
+    expect(slugify('  Crème brûlée & co.  ')).toBe('creme-brulee-co');
+    expect(slugify('!!!')).toBe('');
+  });
+
+  test('uniqueSlug appends a counter and ignores the article being edited', () => {
+    expect(uniqueSlug('playwright-page-object')).toBe('playwright-page-object-2');
+    expect(uniqueSlug('playwright-page-object', getArticles({ status: 'published' })[0].id)).toBe(
+      'playwright-page-object',
+    );
+    expect(uniqueSlug('brand-new')).toBe('brand-new');
   });
 });
 

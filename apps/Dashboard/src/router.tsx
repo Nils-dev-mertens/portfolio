@@ -13,12 +13,20 @@ import { DashboardLayout } from './components/layout';
 import { LoginPage } from './pages/login';
 import { OverviewPage } from './pages/overview';
 import { ProjectsPage } from './pages/projects';
+import { ArticlesPage } from './pages/articles';
 import { WorkPage } from './pages/work';
 import { EducationPage } from './pages/education';
 import { AboutPage } from './pages/about';
 import { SkillsPage } from './pages/skills';
 import { auth } from './lib/api';
-import { projectsQuery, workQuery, educationQuery, aboutQuery, skillsQuery } from './lib/queries';
+import {
+  projectsQuery,
+  articlesQuery,
+  workQuery,
+  educationQuery,
+  aboutQuery,
+  skillsQuery,
+} from './lib/queries';
 
 function Pending() {
   return (
@@ -83,6 +91,14 @@ export function createAppRouter(queryClient: QueryClient) {
     component: wrap(ProjectsPage),
   });
 
+  const articlesRoute = createRoute({
+    getParentRoute: () => layoutRoute,
+    path: '/articles',
+    loader: () => queryClient.ensureQueryData(articlesQuery()).catch(() => null),
+    errorComponent: RouteError,
+    component: wrap(ArticlesPage),
+  });
+
   const workRoute = createRoute({
     getParentRoute: () => layoutRoute,
     path: '/work',
@@ -120,6 +136,7 @@ export function createAppRouter(queryClient: QueryClient) {
     layoutRoute.addChildren([
       indexRoute,
       projectsRoute,
+      articlesRoute,
       workRoute,
       educationRoute,
       aboutRoute,

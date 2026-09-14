@@ -1,5 +1,13 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectsApi, workApi, educationApi, aboutApi, skillsApi } from './api';
+import {
+  articlesApi,
+  projectsApi,
+  workApi,
+  educationApi,
+  aboutApi,
+  skillsApi,
+  type BodyLang,
+} from './api';
 
 // ── Query keys ────────────────────────────────────────────────────────────────
 
@@ -8,6 +16,12 @@ export const keys = {
     all: ['projects'] as const,
     list: (params?: object) => ['projects', 'list', params] as const,
     detail: (id: string) => ['projects', 'detail', id] as const,
+  },
+  articles: {
+    all: ['articles'] as const,
+    list: (params?: object) => ['articles', 'list', params] as const,
+    detail: (id: string) => ['articles', 'detail', id] as const,
+    body: (id: string, lang: BodyLang) => ['articles', 'body', id, lang] as const,
   },
   work: {
     all: ['work'] as const,
@@ -35,6 +49,18 @@ export const projectsQuery = (params?: Parameters<typeof projectsApi.list>[0]) =
 
 export const projectQuery = (id: string) =>
   queryOptions({ queryKey: keys.projects.detail(id), queryFn: () => projectsApi.get(id) });
+
+export const articlesQuery = (params?: Parameters<typeof articlesApi.list>[0]) =>
+  queryOptions({ queryKey: keys.articles.list(params), queryFn: () => articlesApi.list(params) });
+
+export const articleQuery = (id: string) =>
+  queryOptions({ queryKey: keys.articles.detail(id), queryFn: () => articlesApi.get(id) });
+
+export const articleBodyQuery = (id: string, lang: BodyLang) =>
+  queryOptions({
+    queryKey: keys.articles.body(id, lang),
+    queryFn: () => articlesApi.getBody(id, lang),
+  });
 
 export const workQuery = () =>
   queryOptions({ queryKey: keys.work.list(), queryFn: () => workApi.list() });
@@ -75,6 +101,41 @@ export function useDeleteProject() {
   return useMutation({
     mutationFn: projectsApi.delete,
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.projects.all }),
+  });
+}
+
+export function useCreateArticle() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: articlesApi.create,
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.articles.all }),
+  });
+}
+
+export function useUpdateArticle() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...body }: Parameters<typeof articlesApi.update>[1] & { id: string }) =>
+      articlesApi.update(id, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.articles.all }),
+  });
+}
+
+export function useDeleteArticle() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: articlesApi.delete,
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.articles.all }),
+  });
+}
+
+export function useSaveArticleBody() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, lang, body }: { id: string; lang: BodyLang; body: string }) =>
+      articlesApi.saveBody(id, lang, body),
+    // `has_body` lives on the article itself, so the list needs a refresh.
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.articles.all }),
   });
 }
 

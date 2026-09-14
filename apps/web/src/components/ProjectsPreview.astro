@@ -1,6 +1,7 @@
 ---
 import { getProjects, t, type Lang } from '@portfolio/data';
 import { getLang } from '../lib/i18n';
+import { articlesByProject } from '../lib/articles';
 import SectionHeader from './SectionHeader.astro';
 import ProjectCard from './ProjectCard.astro';
 
@@ -10,6 +11,7 @@ interface Props {
 
 const { lang = getLang(Astro.currentLocale) } = Astro.props;
 const projects = getProjects({ featured: true, limit: 3 }, lang);
+const articleByProject = articlesByProject(lang);
 
 // Preview bento — distinct from the /projects page:
 // Row 1: [col-5 compact] [col-7 wide]   ← compact leads, featured lands on right
@@ -34,7 +36,12 @@ const spans: Array<{ col: string; wide: boolean }> = [
         const { col, wide } = spans[i] ?? { col: 'md:col-span-4', wide: false };
         return (
           <div class={`col-span-12 ${col} h-full`}>
-            <ProjectCard project={project} wide={wide} lang={lang} />
+            <ProjectCard
+              project={project}
+              wide={wide}
+              lang={lang}
+              article={articleByProject.get(project.id)}
+            />
           </div>
         );
       })}

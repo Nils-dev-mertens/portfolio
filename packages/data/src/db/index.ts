@@ -19,6 +19,21 @@ export function getDb() {
       featured INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS articles (
+      id TEXT PRIMARY KEY, slug TEXT NOT NULL UNIQUE,
+      title TEXT NOT NULL, title_en TEXT NOT NULL DEFAULT '',
+      summary TEXT NOT NULL DEFAULT '', summary_en TEXT NOT NULL DEFAULT '',
+      body TEXT NOT NULL DEFAULT '', body_en TEXT NOT NULL DEFAULT '',
+      project_id TEXT,
+      status TEXT NOT NULL DEFAULT 'draft', published_at TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')), updated_at TEXT
+    );
+    CREATE TABLE IF NOT EXISTS article_images (
+      id TEXT PRIMARY KEY, article_id TEXT NOT NULL,
+      filename TEXT NOT NULL, mime TEXT NOT NULL, byte_size INTEGER NOT NULL,
+      data BLOB NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS article_images_article_id ON article_images (article_id);
     CREATE TABLE IF NOT EXISTS github_activity (
       id TEXT PRIMARY KEY, type TEXT NOT NULL, repo TEXT NOT NULL,
       message TEXT, occurred_at TEXT NOT NULL
@@ -69,6 +84,10 @@ export function getDb() {
   };
   addColumn('projects', 'title_en', "TEXT NOT NULL DEFAULT ''");
   addColumn('projects', 'description_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('articles', 'title_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('articles', 'summary_en', "TEXT NOT NULL DEFAULT ''");
+  addColumn('articles', 'body', "TEXT NOT NULL DEFAULT ''");
+  addColumn('articles', 'body_en', "TEXT NOT NULL DEFAULT ''");
   addColumn('work_experience', 'role_en', "TEXT NOT NULL DEFAULT ''");
   addColumn('work_experience', 'description_en', 'TEXT');
   addColumn('education', 'program_en', "TEXT NOT NULL DEFAULT ''");

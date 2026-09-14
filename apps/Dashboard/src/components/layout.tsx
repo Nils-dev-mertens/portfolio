@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useRouterState, useRouter } from '@tanstack/react-router';
-import { LayoutDashboard, FolderKanban, Briefcase, GraduationCap, User, Sparkles, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, FileText, Briefcase, GraduationCap, User, Sparkles, LogOut, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { auth } from '@/lib/api';
 
 const nav = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, exact: true },
   { to: '/projects', label: 'Projects', icon: FolderKanban },
+  { to: '/articles', label: 'Articles', icon: FileText },
   { to: '/work', label: 'Work', icon: Briefcase },
   { to: '/education', label: 'Education', icon: GraduationCap },
   { to: '/about', label: 'About', icon: User },
