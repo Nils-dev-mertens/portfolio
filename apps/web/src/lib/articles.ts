@@ -19,3 +19,39 @@ export function articlesByProject(lang: Lang): Map<string, Article> {
 export function articleHref(article: Pick<Article, 'slug'>, lang: Lang): string {
   return `${lang === 'en' ? '/en' : ''}/articles/${article.slug}`;
 }
+
+/**
+ * Returns the first image `src` found in the markdown body (markdown `![]()` or
+ * raw `<img src>`), in document order. Null when the article has no images.
+ */
+export function firstImageSrc(body: string): string | null {
+  const hits: { url: string; index: number }[] = [];
+
+  const md = /!\[[^\]]*\]\(\s*([^\s)]+)(?:\s+[^)]*)?\)/g;
+  let m: RegExpExecArray | null;
+  while ((m = md.exec(body)) !== null) {
+    hits.push({ url: m[1], index: m.index });
+  }
+
+  const html = /<img[^>]+src=["']([^"']+)["']/gi;
+  while ((m = html.exec(body)) !== null) {
+    hits.push({ url: m[1], index: m.index });
+  }
+
+  if (hits.length === 0) return null;
+  hits.sort((a, b) => a.index - b.index);
+  return hits[0].url;
+}
+
+/** Absolute URL for the article's Open Graph image, or null for the fallback. */
+export function articleOgImage(article: Pick<Article, 'body'>, site: URL): string | null {
+  const raw = firstImageSrc(article.body);
+  if (!raw) return null;
+  // Already absolute (external CDN etc.) — keep as is.
+  if (/^https?:\/\//i.test(raw)) return raw;
+  try {
+    return new URL(raw, site).href;
+  } catch {
+    return null;
+  }
+}

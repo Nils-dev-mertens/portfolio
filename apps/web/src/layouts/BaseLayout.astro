@@ -7,6 +7,13 @@ import { getLang, swapLocale } from '../lib/i18n';
 interface Props {
   title?: string;
   description?: string;
+  /** Absolute URL for og:image / twitter:image. Defaults to /og-default.png. */
+  ogImage?: string;
+  /** Open Graph type. */
+  ogType?: 'website' | 'article';
+  /** ISO timestamp for article:published_time etc. */
+  publishedTime?: string | null;
+  modifiedTime?: string | null;
 }
 
 const {
@@ -14,12 +21,20 @@ const {
   description = 'Junior Fullstack Developer uit Antwerpen. Gespecialiseerd in test automation, DevOps en open source projecten.',
 } = Astro.props;
 
+const {
+  ogImage: propsOgImage,
+  ogType = 'website',
+  publishedTime,
+  modifiedTime,
+} = Astro.props as Props & { ogType?: 'website' | 'article'; publishedTime?: string | null; modifiedTime?: string | null; ogImage?: string };
+
 const lang = getLang(Astro.currentLocale);
 const site = Astro.site ?? new URL(Astro.url.origin);
 const canonical = new URL(Astro.url.pathname, site).href;
 const canonicalNl = new URL(swapLocale(Astro.url.pathname, 'nl'), site).href;
 const canonicalEn = new URL(swapLocale(Astro.url.pathname, 'en'), site).href;
-const ogImage = new URL('/og-default.png', site).href;
+const fallbackOgImage = new URL('/og-default.png', site).href;
+const ogImage = propsOgImage ?? fallbackOgImage;
 ---
 
 <!doctype html>
@@ -37,11 +52,14 @@ const ogImage = new URL('/og-default.png', site).href;
     <meta name="theme-color" content="#1e1b2e" />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'nl_BE'} />
+    {ogType === 'article' && publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {ogType === 'article' && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />

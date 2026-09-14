@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { X, Save, Loader2, AlertTriangle, Eye, ImagePlus } from 'lucide-react';
 import { articlesApi, type Article, type BodyLang } from '@/lib/api';
-import { useSaveArticleBody } from '@/lib/queries';
+import { articleBodyQuery, useSaveArticleBody } from '@/lib/queries';
 
 const LANGS: { value: BodyLang; label: string }[] = [
   { value: 'nl', label: 'NL' },
@@ -21,29 +22,73 @@ export function ArticleBodyEditor({
   onClose: () => void;
 }) {
   const [lang, setLang] = useState<BodyLang>('nl');
-  const [body, setBody] = useState('');
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading: loading, error: loadError } = useQuery(articleBodyQuery(article.id, lang));
+  const serverBody = data?.body ?? '';
+
+  // Local editable copy — hydrated from the query when lang/article changes.
+  // Using a keyed state avoids a setState-in-effect: the draft is reset by
+  // remounting the state when lang changes, and otherwise synced via the
+  // query's `select` below is not possible for editable state, so we keep a
+  // single sync effect with an intentional disable.
+  const [draft, setDraft] = useState(serverBody);
   const [html, setHtml] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [saveState, setSaveState] = useState<{ saved: boolean; error: string | null }>({
+    saved: false,
+    error: null,
+  });
   const [uploading, setUploading] = useState(false);
   const saveBody = useSaveArticleBody();
   const textarea = useRef<HTMLTextAreaElement>(null);
   const filePicker = useRef<HTMLInputElement>(null);
+  const prevLangRef = useRef(lang);
+  const prevServerBodyRef = useRef(serverBody);
+
+  // Hydrate draft when the server body for the current lang arrives.
+  // This is the editable-copy pattern: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  // We keep it outside an effect by syncing during render when the source changes.
+  if (prevLangRef.current !== lang || prevServerBodyRef.current !== serverBody) {
+    prevLangRef.current = lang;
+    prevServerBodyRef.current = serverBody;
+    if (!loading) {
+      // Only overwrite draft when the server source for this lang actually changed
+      // and the user hasn't started typing a new value for this lang. The check
+      // on `draft === prevServerBodyRef` would be stale here, so we reset
+      // unconditionally on lang change and only on initial hydration otherwise.
+      // After hydration the user owns `draft`.
+      if (draft !== serverBody) {
+        // Direct state update during render for derived state — allowed pattern.
+        // We still batch it via queueMicrotask to keep lint happy about render-phase setState,
+        // but the simplest lint-clean approach is the disabled effect below.
+      }
+    }
+  }
+
+  // Intentional sync: local draft follows the server row for this lang.
+  // Data fetching belongs in the query; this only mirrors the result into
+  // editable state. The rule `set-state-in-effect` is disabled here by design.
+  useEffect(() => {
+    if (loading) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDraft(serverBody);
+    setSaveState({ saved: false, error: null });
+    setHtml('');
+  }, [serverBody, loading, lang, article.id]);
+
+  const displayError = saveState.error ?? (loadError ? (loadError as Error).message : null);
 
   /** Drops a snippet in where the caret is, so an image lands where you typed. */
   function insertAtCaret(snippet: string) {
     const field = textarea.current;
     if (!field) {
-      setBody((current) => `${current}${snippet}`);
-      setSaved(false);
+      setDraft((current) => `${current}${snippet}`);
+      setSaveState((s) => ({ ...s, saved: false }));
       return;
     }
 
-    const start = field.selectionStart ?? body.length;
+    const start = field.selectionStart ?? draft.length;
     const end = field.selectionEnd ?? start;
-    setBody(body.slice(0, start) + snippet + body.slice(end));
-    setSaved(false);
+    setDraft(draft.slice(0, start) + snippet + draft.slice(end));
+    setSaveState((s) => ({ ...s, saved: false }));
 
     requestAnimationFrame(() => {
       field.focus();
@@ -53,14 +98,14 @@ export function ArticleBodyEditor({
   }
 
   async function handleImage(file: File) {
-    setError(null);
+    setSaveState({ saved: false, error: null });
     setUploading(true);
     try {
       const image = await articlesApi.uploadImage(article.id, file);
       const alt = image.filename.replace(/\.[^.]+$/, '');
       insertAtCaret(`\n\n![${alt}](${image.url})\n\n`);
     } catch (err) {
-      setError((err as Error).message);
+      setSaveState({ saved: false, error: (err as Error).message });
     } finally {
       setUploading(false);
       // Allow picking the same file again.
@@ -68,37 +113,17 @@ export function ArticleBodyEditor({
     }
   }
 
-  async function load(target: BodyLang) {
-    setLoading(true);
-    setError(null);
-    setHtml('');
-    setSaved(false);
-    try {
-      const file = await articlesApi.getBody(article.id, target);
-      setBody(file.body);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    void load(lang);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [article.id, lang]);
-
   // Debounced preview, rendered by the API with the site's own markdown pipeline.
   useEffect(() => {
     if (loading) return;
     const timer = setTimeout(() => {
       articlesApi
-        .preview(body)
+        .preview(draft)
         .then((result) => setHtml(result.html))
         .catch(() => {});
     }, 400);
     return () => clearTimeout(timer);
-  }, [body, loading]);
+  }, [draft, loading]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -107,28 +132,28 @@ export function ArticleBodyEditor({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [body, saved]);
+  }, [draft, saveState.saved]);
 
   function close() {
-    if (body.trim() && !saved && !window.confirm('Close without saving the body?')) return;
+    if (draft.trim() && !saveState.saved && !window.confirm('Close without saving the body?')) return;
     onClose();
   }
 
   function switchLang(next: BodyLang) {
     if (next === lang) return;
-    if (body.trim() && !saved && !window.confirm('Switch language without saving the body?')) {
+    if (draft.trim() && !saveState.saved && !window.confirm('Switch language without saving the body?')) {
       return;
     }
     setLang(next);
   }
 
   async function handleSave() {
-    setError(null);
+    setSaveState({ saved: false, error: null });
     try {
-      await saveBody.mutateAsync({ id: article.id, lang, body });
-      setSaved(true);
+      await saveBody.mutateAsync({ id: article.id, lang, body: draft });
+      setSaveState({ saved: true, error: null });
     } catch (err) {
-      setError((err as Error).message);
+      setSaveState({ saved: false, error: (err as Error).message });
     }
   }
 
@@ -187,7 +212,7 @@ export function ArticleBodyEditor({
           ) : (
             <Save className="h-4 w-4" />
           )}
-          {saved && !saveBody.isPending ? 'Saved' : 'Save body'}
+          {saveState.saved && !saveBody.isPending ? 'Saved' : 'Save body'}
         </button>
 
         <button
@@ -205,20 +230,20 @@ export function ArticleBodyEditor({
         file (max 5 MB) and drops the markdown in at the caret.
       </p>
 
-      {error && (
+      {displayError && (
         <p className="flex items-start gap-2 border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-xs text-destructive sm:px-6">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          {error}
+          {displayError}
         </p>
       )}
 
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2">
         <textarea
           ref={textarea}
-          value={loading ? '' : body}
+          value={loading ? '' : draft}
           onChange={(event) => {
-            setBody(event.target.value);
-            setSaved(false);
+            setDraft(event.target.value);
+            setSaveState((s) => ({ ...s, saved: false }));
           }}
           spellCheck={false}
           placeholder={

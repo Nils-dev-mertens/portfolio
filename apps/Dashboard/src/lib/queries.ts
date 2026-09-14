@@ -21,6 +21,7 @@ export const keys = {
     all: ['articles'] as const,
     list: (params?: object) => ['articles', 'list', params] as const,
     detail: (id: string) => ['articles', 'detail', id] as const,
+    body: (id: string, lang: BodyLang) => ['articles', 'body', id, lang] as const,
   },
   work: {
     all: ['work'] as const,
@@ -54,6 +55,12 @@ export const articlesQuery = (params?: Parameters<typeof articlesApi.list>[0]) =
 
 export const articleQuery = (id: string) =>
   queryOptions({ queryKey: keys.articles.detail(id), queryFn: () => articlesApi.get(id) });
+
+export const articleBodyQuery = (id: string, lang: BodyLang) =>
+  queryOptions({
+    queryKey: keys.articles.body(id, lang),
+    queryFn: () => articlesApi.getBody(id, lang),
+  });
 
 export const workQuery = () =>
   queryOptions({ queryKey: keys.work.list(), queryFn: () => workApi.list() });

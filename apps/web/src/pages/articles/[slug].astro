@@ -3,6 +3,7 @@ import { getArticleBySlug, type Lang } from '@portfolio/data';
 import { getLang } from '../../lib/i18n';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleView from '../../components/ArticleView.astro';
+import { articleOgImage } from '../../lib/articles';
 
 const lang = getLang(Astro.currentLocale) as Lang;
 const slug = Astro.params.slug ?? '';
@@ -12,11 +13,18 @@ const article = getArticleBySlug(slug, lang);
 if (!article || article.status !== 'published') Astro.response.status = 404;
 
 const title = article && article.status === 'published' ? article.title : 'Artikel niet gevonden';
+const site = Astro.site ?? new URL(Astro.url.origin);
+const ogImage = article?.status === 'published' ? articleOgImage(article, site) : null;
+const ogType = article?.status === 'published' ? 'article' : 'website';
 ---
 
 <BaseLayout
   title={`${title} — Nils Mertens`}
   description={article && article.status === 'published' ? article.summary : undefined}
+  ogImage={ogImage ?? undefined}
+  ogType={ogType as 'article' | 'website'}
+  publishedTime={article?.published_at ?? null}
+  modifiedTime={article?.updated_at ?? article?.published_at ?? null}
 >
   <ArticleView article={article} lang={lang} />
 </BaseLayout>

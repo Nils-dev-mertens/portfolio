@@ -36,7 +36,6 @@ const CATEGORY_META: Record<ProjectCategory, { labelKey: string; accent: string;
 };
 
 const meta = CATEGORY_META[project.category] ?? CATEGORY_META.other;
-const year = project.created_at.slice(0, 4);
 const hasActions = Boolean(project.url || project.repo_url || article);
 const titleHref = project.url ?? project.repo_url;
 const writeUpHref = article ? articleHref(article, lang) : undefined;
@@ -56,11 +55,7 @@ const writeUpHref = article ? articleHref(article, lang) : undefined;
       {t(lang, meta.labelKey)}
     </span>
     <span class="flex-1"></span>
-    {isLatest ? (
-      <span class="latest-badge">{t(lang, 'projects.latest')}</span>
-    ) : (
-      <span class="text-[11px] tabular-nums text-muted-foreground">{year}</span>
-    )}
+    {isLatest && <span class="latest-badge">{t(lang, 'projects.latest')}</span>}
   </div>
 
   {wide ? (
