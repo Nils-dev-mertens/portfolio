@@ -443,7 +443,8 @@ describe('article images', () => {
 
   function upload(id: string, bytes: Uint8Array, name: string, type: string, headers: Record<string, string>) {
     const form = new FormData();
-    form.append('file', new File([bytes], name, { type }));
+    // Uint8Array<ArrayBufferLike> (Bun's Buffer) isn't assignable to BlobPart's ArrayBufferView<ArrayBuffer> in newer TS — safe cast at runtime.
+    form.append('file', new File([bytes as unknown as BlobPart], name, { type }));
     return app.request(`/api/articles/${id}/images`, { method: 'POST', headers, body: form });
   }
 
